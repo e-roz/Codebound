@@ -46,6 +46,10 @@ namespace Codebound.UI
         [Header("Name and Look")]
         [SerializeField] NameLookPanelController _nameLook;
 
+        [Header("Audio")]
+        [SerializeField] AudioSource _sfxSource;
+        [SerializeField] AudioClip _clickClip;
+
         [Header("Placeholder")]
         [SerializeField] TMP_Text _placeholderText;
         [SerializeField] Button _placeholderBackButton;
@@ -66,6 +70,8 @@ namespace Codebound.UI
             _sfxSlider.SetValueWithoutNotify(settings.sfxVolume);
 
             WireButtons();
+            foreach (var button in FindObjectsOfType<Button>(true))
+                button.onClick.AddListener(PlayClick);
             _nameLook.Started += OnNameLookStarted;
             _nameLook.Cancelled += BackToTitle;
 
@@ -106,6 +112,12 @@ namespace Codebound.UI
 
             _musicSlider.onValueChanged.AddListener(GameServices.Settings.SetMusicVolume);
             _sfxSlider.onValueChanged.AddListener(GameServices.Settings.SetSfxVolume);
+        }
+
+        void PlayClick()
+        {
+            _sfxSource.volume = GameServices.Settings.Settings.sfxVolume;
+            _sfxSource.PlayOneShot(_clickClip);
         }
 
         void OnNewGame()
@@ -219,6 +231,7 @@ namespace Codebound.UI
                 (nameof(_confirmQuitYesButton), _confirmQuitYesButton),
                 (nameof(_confirmQuitNoButton), _confirmQuitNoButton),
                 (nameof(_nameLook), _nameLook),
+                (nameof(_sfxSource), _sfxSource), (nameof(_clickClip), _clickClip),
                 (nameof(_placeholderText), _placeholderText),
                 (nameof(_placeholderBackButton), _placeholderBackButton)
             };

@@ -5,7 +5,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Codebound.Core",
-        "Codebound.App"
+        "Codebound.App",
+        "Codebound.Editor"
     ],
     "includePlatforms": [
         "Editor"

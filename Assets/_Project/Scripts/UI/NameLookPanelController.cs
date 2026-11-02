@@ -9,8 +9,8 @@ namespace Codebound.UI
 {
     public class NameLookPanelController : MonoBehaviour
     {
-        static readonly Color LookNormal = new Color(0.23f, 0.23f, 0.42f);
-        static readonly Color LookSelected = new Color(0.55f, 0.55f, 0.9f);
+        static readonly Color LookNormal = new Color(0.55f, 0.55f, 0.55f);
+        static readonly Color LookSelected = Color.white;
 
         [SerializeField] TMP_InputField _nameInput;
         [SerializeField] TMP_Text _counterText;

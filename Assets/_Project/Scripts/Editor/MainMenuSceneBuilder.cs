@@ -15,10 +15,15 @@ namespace Codebound.EditorTools
         const string ScenePath = ScenesFolder + "/MainMenu.unity";
 
         static readonly Color PanelColor = new Color(0.106f, 0.106f, 0.184f);
-        static readonly Color ButtonNormal = new Color(0.23f, 0.23f, 0.42f);
-        static readonly Color ButtonHighlight = new Color(0.38f, 0.38f, 0.66f);
-        static readonly Color ButtonPressed = new Color(0.15f, 0.15f, 0.30f);
-        static readonly Color ButtonDisabled = new Color(0.2f, 0.2f, 0.25f, 0.6f);
+        static readonly Color ButtonNormal = new Color(0.72f, 0.72f, 0.72f);
+        static readonly Color ButtonHighlight = Color.white;
+        static readonly Color ButtonPressed = new Color(0.55f, 0.55f, 0.55f);
+        static readonly Color ButtonDisabled = new Color(0.35f, 0.35f, 0.35f, 0.6f);
+
+        const string ArtFolder = "Assets/_Project/Art";
+        static Sprite _frameBrown;
+        static Sprite _frameDark;
+        static TMP_FontAsset _uiFont;
         static readonly Color HintColor = new Color(0.7f, 0.7f, 0.8f);
         static readonly Color NoticeColor = new Color(1f, 0.8f, 0.4f);
 
@@ -30,6 +35,19 @@ namespace Codebound.EditorTools
                 EditorUtility.DisplayDialog("TextMeshPro setup needed",
                     "Import the TMP Essentials first:\nWindow > TextMeshPro > Import TMP Essentials.\nThen run this menu item again.",
                     "OK");
+                return;
+            }
+
+            _uiFont = FontAssetBuilder.LoadUiFont();
+            _frameBrown = AssetDatabase.LoadAssetAtPath<Sprite>(ArtFolder + "/UI/frame_brown.png");
+            _frameDark = AssetDatabase.LoadAssetAtPath<Sprite>(ArtFolder + "/UI/frame_dark.png");
+            var look1 = AssetDatabase.LoadAssetAtPath<Sprite>(ArtFolder + "/Characters/warden_look1.png");
+            var look2 = AssetDatabase.LoadAssetAtPath<Sprite>(ArtFolder + "/Characters/warden_look2.png");
+            var clickClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/Sfx/ui_click.ogg");
+            if (_uiFont == null || _frameBrown == null || _frameDark == null || look1 == null || look2 == null || clickClip == null)
+            {
+                EditorUtility.DisplayDialog("Assets missing",
+                    "Art, font or audio files are missing from Assets/_Project. See Plans/ASSETS_PHASE.md.", "OK");
                 return;
             }
 
@@ -77,9 +95,11 @@ namespace Codebound.EditorTools
             var settingsBack = CreateLayoutButton(settingsColumn, "BackButton", "Back");
 
             CreateText(credits.transform, "CreditsTitle", "Credits", 90, new Vector2(0, 380), new Vector2(900, 120));
-            CreateText(credits.transform, "CreditsBody",
-                "Codebound: The Programming Dungeon\n\nA university game development project.\nBuilt with Unity.\n\nAsset credits will be listed here.",
-                36, new Vector2(0, 40), new Vector2(1200, 500));
+            var creditsBody = CreateText(credits.transform, "CreditsBody",
+                ReadCredits(), 36, new Vector2(0, -50), new Vector2(1500, 540));
+            creditsBody.enableAutoSizing = true;
+            creditsBody.fontSizeMin = 18;
+            creditsBody.fontSizeMax = 36;
             var creditsBack = CreateButton(credits.transform, "BackButton", "Back", new Vector2(0, -400), new Vector2(400, 70));
 
             CreateText(confirmNewGame.transform, "Message",
@@ -91,12 +111,14 @@ namespace Codebound.EditorTools
             var quitYes = CreateButton(confirmQuit.transform, "YesButton", "Yes, quit", new Vector2(-240, -100), new Vector2(420, 70));
             var quitNo = CreateButton(confirmQuit.transform, "NoButton", "No, stay", new Vector2(240, -100), new Vector2(420, 70));
 
-            CreateText(nameLookPanel.transform, "NameLookTitle", "Who are you, Warden?", 90, new Vector2(0, 400), new Vector2(1200, 120));
+            CreateText(nameLookPanel.transform, "NameLookTitle", "Who are you, Warden?", 80, new Vector2(0, 420), new Vector2(1800, 120));
             var lookButtons = new[]
             {
                 CreateButton(nameLookPanel.transform, "Look1Button", "Look 1", new Vector2(-220, 170), new Vector2(300, 300)),
                 CreateButton(nameLookPanel.transform, "Look2Button", "Look 2", new Vector2(220, 170), new Vector2(300, 300))
             };
+            AddPortrait(lookButtons[0], look1);
+            AddPortrait(lookButtons[1], look2);
             var selectedLabels = new[]
             {
                 CreateText(nameLookPanel.transform, "Look1Selected", "Selected", 32, new Vector2(-220, 0), new Vector2(300, 40), NoticeColor),
@@ -104,7 +126,7 @@ namespace Codebound.EditorTools
             };
             var nameInput = CreateInputField(nameLookPanel.transform, "NameInput", "Apprentice", new Vector2(0, -110), new Vector2(600, 70));
             var counterText = CreateText(nameLookPanel.transform, "CounterText", "0/16", 32, new Vector2(420, -110), new Vector2(160, 50), HintColor);
-            var previewText = CreateText(nameLookPanel.transform, "PreviewText", string.Empty, 34, new Vector2(0, -215), new Vector2(1300, 120), HintColor);
+            var previewText = CreateText(nameLookPanel.transform, "PreviewText", string.Empty, 34, new Vector2(0, -215), new Vector2(1600, 120), HintColor);
             var nameLookStart = CreateButton(nameLookPanel.transform, "StartButton", "Start", new Vector2(-240, -380), new Vector2(420, 70));
             var nameLookBack = CreateButton(nameLookPanel.transform, "BackButton", "Back", new Vector2(240, -380), new Vector2(420, 70));
 
@@ -124,6 +146,8 @@ namespace Codebound.EditorTools
             var placeholderBack = CreateButton(placeholder.transform, "BackButton", "Back", new Vector2(0, -250), new Vector2(400, 70));
 
             var controllerObject = new GameObject("MenuController");
+            var sfxSource = controllerObject.AddComponent<AudioSource>();
+            sfxSource.playOnAwake = false;
             var controller = controllerObject.AddComponent<MainMenuController>();
             var so = new SerializedObject(controller);
             Assign(so, "_titlePanel", title);
@@ -151,6 +175,8 @@ namespace Codebound.EditorTools
             Assign(so, "_confirmQuitNoButton", quitNo);
             Assign(so, "_placeholderText", placeholderText);
             Assign(so, "_placeholderBackButton", placeholderBack);
+            Assign(so, "_sfxSource", sfxSource);
+            Assign(so, "_clickClip", clickClip);
             so.ApplyModifiedPropertiesWithoutUndo();
 
             if (!AssetDatabase.IsValidFolder(ScenesFolder))
@@ -213,7 +239,7 @@ namespace Codebound.EditorTools
             rect.sizeDelta = dimensions;
 
             var label = go.AddComponent<TextMeshProUGUI>();
-            label.font = TMP_Settings.defaultFontAsset;
+            label.font = _uiFont != null ? _uiFont : TMP_Settings.defaultFontAsset;
             label.text = text;
             label.fontSize = size;
             label.alignment = TextAlignmentOptions.Center;
@@ -251,7 +277,7 @@ namespace Codebound.EditorTools
             rect.sizeDelta = dimensions;
 
             var image = go.GetComponent<Image>();
-            image.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            image.sprite = _frameBrown;
             image.type = Image.Type.Sliced;
             image.color = Color.white;
 
@@ -271,6 +297,39 @@ namespace Codebound.EditorTools
             return button;
         }
 
+        static void AddPortrait(Button button, Sprite sprite)
+        {
+            var go = new GameObject("Portrait", typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(button.transform, false);
+            var rect = (RectTransform)go.transform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(0, 20);
+            rect.sizeDelta = new Vector2(200, 200);
+            var image = go.GetComponent<Image>();
+            image.sprite = sprite;
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+
+            var label = button.GetComponentInChildren<TextMeshProUGUI>();
+            label.alignment = TextAlignmentOptions.Bottom;
+            label.fontSize = 30;
+            label.margin = new Vector4(0, 0, 0, 14);
+        }
+
+        static string ReadCredits()
+        {
+            var path = System.IO.Path.Combine(Application.dataPath, "..", "CREDITS.md");
+            if (!System.IO.File.Exists(path)) return "Credits file (CREDITS.md) not found.";
+
+            var lines = new List<string>();
+            foreach (var raw in System.IO.File.ReadAllLines(path))
+            {
+                if (raw.StartsWith("# ")) continue;
+                lines.Add(raw.TrimStart('#', ' '));
+            }
+            return string.Join("\n", lines).Trim();
+        }
+
         static Button CreateLayoutButton(Transform parent, string name, string label)
         {
             var button = CreateButton(parent, name, label, Vector2.zero, new Vector2(500, 70));
@@ -288,9 +347,9 @@ namespace Codebound.EditorTools
         {
             var resources = new DefaultControls.Resources
             {
-                standard = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd"),
-                background = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd"),
-                knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd")
+                standard = _frameBrown,
+                background = _frameDark,
+                knob = _frameBrown
             };
             var go = DefaultControls.CreateSlider(resources);
             go.name = name;
@@ -314,9 +373,9 @@ namespace Codebound.EditorTools
             rect.sizeDelta = dimensions;
 
             var image = go.GetComponent<Image>();
-            image.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            image.sprite = _frameDark;
             image.type = Image.Type.Sliced;
-            image.color = new Color(0.16f, 0.16f, 0.28f);
+            image.color = new Color(0.4f, 0.4f, 0.5f);
 
             var viewport = new GameObject("Text Area", typeof(RectTransform), typeof(RectMask2D));
             viewport.transform.SetParent(go.transform, false);
