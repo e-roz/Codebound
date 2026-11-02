@@ -52,6 +52,7 @@ namespace Codebound.EditorTools
             var credits = CreatePanel(canvas, "CreditsPanel");
             var confirmNewGame = CreatePanel(canvas, "ConfirmNewGamePanel");
             var confirmQuit = CreatePanel(canvas, "ConfirmQuitPanel");
+            var nameLookPanel = CreatePanel(canvas, "NameLookPanel");
             var placeholder = CreatePanel(canvas, "PlaceholderPanel");
 
             CreateText(title.transform, "LogoText", "CODEBOUND", 120, new Vector2(0, 380), new Vector2(1400, 160));
@@ -90,6 +91,34 @@ namespace Codebound.EditorTools
             var quitYes = CreateButton(confirmQuit.transform, "YesButton", "Yes, quit", new Vector2(-240, -100), new Vector2(420, 70));
             var quitNo = CreateButton(confirmQuit.transform, "NoButton", "No, stay", new Vector2(240, -100), new Vector2(420, 70));
 
+            CreateText(nameLookPanel.transform, "NameLookTitle", "Who are you, Warden?", 90, new Vector2(0, 400), new Vector2(1200, 120));
+            var lookButtons = new[]
+            {
+                CreateButton(nameLookPanel.transform, "Look1Button", "Look 1", new Vector2(-220, 170), new Vector2(300, 300)),
+                CreateButton(nameLookPanel.transform, "Look2Button", "Look 2", new Vector2(220, 170), new Vector2(300, 300))
+            };
+            var selectedLabels = new[]
+            {
+                CreateText(nameLookPanel.transform, "Look1Selected", "Selected", 32, new Vector2(-220, 0), new Vector2(300, 40), NoticeColor),
+                CreateText(nameLookPanel.transform, "Look2Selected", string.Empty, 32, new Vector2(220, 0), new Vector2(300, 40), NoticeColor)
+            };
+            var nameInput = CreateInputField(nameLookPanel.transform, "NameInput", "Apprentice", new Vector2(0, -110), new Vector2(600, 70));
+            var counterText = CreateText(nameLookPanel.transform, "CounterText", "0/16", 32, new Vector2(420, -110), new Vector2(160, 50), HintColor);
+            var previewText = CreateText(nameLookPanel.transform, "PreviewText", string.Empty, 34, new Vector2(0, -215), new Vector2(1300, 120), HintColor);
+            var nameLookStart = CreateButton(nameLookPanel.transform, "StartButton", "Start", new Vector2(-240, -380), new Vector2(420, 70));
+            var nameLookBack = CreateButton(nameLookPanel.transform, "BackButton", "Back", new Vector2(240, -380), new Vector2(420, 70));
+
+            var nameLook = nameLookPanel.AddComponent<NameLookPanelController>();
+            var nameLookSo = new SerializedObject(nameLook);
+            Assign(nameLookSo, "_nameInput", nameInput);
+            Assign(nameLookSo, "_counterText", counterText);
+            Assign(nameLookSo, "_previewText", previewText);
+            AssignArray(nameLookSo, "_lookButtons", lookButtons);
+            AssignArray(nameLookSo, "_selectedLabels", selectedLabels);
+            Assign(nameLookSo, "_startButton", nameLookStart);
+            Assign(nameLookSo, "_backButton", nameLookBack);
+            nameLookSo.ApplyModifiedPropertiesWithoutUndo();
+
             var placeholderText = CreateText(placeholder.transform, "PlaceholderText", "Coming soon.", 48,
                 new Vector2(0, 60), new Vector2(1200, 300));
             var placeholderBack = CreateButton(placeholder.transform, "BackButton", "Back", new Vector2(0, -250), new Vector2(400, 70));
@@ -103,6 +132,8 @@ namespace Codebound.EditorTools
             Assign(so, "_confirmNewGamePanel", confirmNewGame);
             Assign(so, "_confirmQuitPanel", confirmQuit);
             Assign(so, "_placeholderPanel", placeholder);
+            Assign(so, "_nameLookPanel", nameLookPanel);
+            Assign(so, "_nameLook", nameLook);
             Assign(so, "_newGameButton", newGame);
             Assign(so, "_continueButton", continueButton);
             Assign(so, "_settingsButton", settingsButton);
@@ -271,6 +302,61 @@ namespace Codebound.EditorTools
             slider.maxValue = 1f;
             slider.value = 0.8f;
             return slider;
+        }
+
+        static TMP_InputField CreateInputField(Transform parent, string name, string hint, Vector2 position, Vector2 dimensions)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(TMP_InputField));
+            go.transform.SetParent(parent, false);
+            var rect = (RectTransform)go.transform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = position;
+            rect.sizeDelta = dimensions;
+
+            var image = go.GetComponent<Image>();
+            image.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            image.type = Image.Type.Sliced;
+            image.color = new Color(0.16f, 0.16f, 0.28f);
+
+            var viewport = new GameObject("Text Area", typeof(RectTransform), typeof(RectMask2D));
+            viewport.transform.SetParent(go.transform, false);
+            var viewportRect = (RectTransform)viewport.transform;
+            Stretch(viewportRect);
+            viewportRect.offsetMin = new Vector2(20, 8);
+            viewportRect.offsetMax = new Vector2(-20, -8);
+
+            var text = CreateText(viewport.transform, "Text", string.Empty, 40, Vector2.zero, dimensions);
+            Stretch(text.rectTransform);
+            text.alignment = TextAlignmentOptions.MidlineLeft;
+            text.enableWordWrapping = false;
+
+            var placeholder = CreateText(viewport.transform, "Placeholder", hint, 40, Vector2.zero, dimensions,
+                new Color(1f, 1f, 1f, 0.4f));
+            Stretch(placeholder.rectTransform);
+            placeholder.alignment = TextAlignmentOptions.MidlineLeft;
+            placeholder.fontStyle = FontStyles.Italic;
+            placeholder.enableWordWrapping = false;
+
+            var input = go.GetComponent<TMP_InputField>();
+            input.targetGraphic = image;
+            input.textViewport = viewportRect;
+            input.textComponent = text;
+            input.placeholder = placeholder;
+            input.lineType = TMP_InputField.LineType.SingleLine;
+            return input;
+        }
+
+        static void AssignArray<T>(SerializedObject so, string field, T[] values) where T : Object
+        {
+            var property = so.FindProperty(field);
+            if (property == null)
+            {
+                Debug.LogError("MainMenuSceneBuilder: field '" + field + "' not found on " + so.targetObject.GetType().Name + ".");
+                return;
+            }
+            property.arraySize = values.Length;
+            for (var i = 0; i < values.Length; i++)
+                property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
         }
 
         static void Assign(SerializedObject so, string field, Object value)

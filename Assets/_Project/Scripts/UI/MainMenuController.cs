@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Codebound.App;
 using Codebound.Core;
 using TMPro;
@@ -15,6 +17,7 @@ namespace Codebound.UI
         [SerializeField] GameObject _creditsPanel;
         [SerializeField] GameObject _confirmNewGamePanel;
         [SerializeField] GameObject _confirmQuitPanel;
+        [SerializeField] GameObject _nameLookPanel;
         [SerializeField] GameObject _placeholderPanel;
 
         [Header("Title")]
@@ -40,6 +43,9 @@ namespace Codebound.UI
         [SerializeField] Button _confirmQuitYesButton;
         [SerializeField] Button _confirmQuitNoButton;
 
+        [Header("Name and Look")]
+        [SerializeField] NameLookPanelController _nameLook;
+
         [Header("Placeholder")]
         [SerializeField] TMP_Text _placeholderText;
         [SerializeField] Button _placeholderBackButton;
@@ -60,6 +66,9 @@ namespace Codebound.UI
             _sfxSlider.SetValueWithoutNotify(settings.sfxVolume);
 
             WireButtons();
+            _nameLook.Started += OnNameLookStarted;
+            _nameLook.Cancelled += BackToTitle;
+
             RefreshTitle();
             _navigator.ScreenChanged += OnScreenChanged;
             OnScreenChanged(_navigator.Current);
@@ -68,6 +77,9 @@ namespace Codebound.UI
         void OnDestroy()
         {
             _navigator.ScreenChanged -= OnScreenChanged;
+            if (_nameLook == null) return;
+            _nameLook.Started -= OnNameLookStarted;
+            _nameLook.Cancelled -= BackToTitle;
         }
 
         void Update()
@@ -89,8 +101,7 @@ namespace Codebound.UI
             _confirmNewGameNoButton.onClick.AddListener(BackToTitle);
             _confirmQuitNoButton.onClick.AddListener(BackToTitle);
 
-            _confirmNewGameYesButton.onClick.AddListener(
-                () => ShowPlaceholder("The Name and Look screen is coming soon."));
+            _confirmNewGameYesButton.onClick.AddListener(() => _navigator.Show(MenuScreen.NameLook));
             _confirmQuitYesButton.onClick.AddListener(Quit);
 
             _musicSlider.onValueChanged.AddListener(GameServices.Settings.SetMusicVolume);
@@ -102,12 +113,31 @@ namespace Codebound.UI
             if (MainMenuRules.NewGameNeedsConfirm(_hasSave))
                 _navigator.Show(MenuScreen.ConfirmNewGame);
             else
-                ShowPlaceholder("The Name and Look screen is coming soon.");
+                _navigator.Show(MenuScreen.NameLook);
         }
 
         void OnContinue()
         {
             ShowPlaceholder($"Welcome back, {_save.playerName}. The Keep Map is coming soon.");
+        }
+
+        void OnNameLookStarted(PlayerSave save)
+        {
+            try
+            {
+                GameServices.Save.Save(save);
+            }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+            {
+                Debug.LogError($"Could not write the save file: {e.Message}");
+                ShowPlaceholder("Your game could not be saved. Please try again.");
+                return;
+            }
+
+            _save = save;
+            _hasSave = true;
+            RefreshTitle();
+            ShowPlaceholder($"Welcome, {save.playerName}. The prologue is coming soon.");
         }
 
         void ShowPlaceholder(string message)
@@ -138,6 +168,7 @@ namespace Codebound.UI
             _creditsPanel.SetActive(screen == MenuScreen.Credits);
             _confirmNewGamePanel.SetActive(screen == MenuScreen.ConfirmNewGame);
             _confirmQuitPanel.SetActive(screen == MenuScreen.ConfirmQuit);
+            _nameLookPanel.SetActive(screen == MenuScreen.NameLook);
             _placeholderPanel.SetActive(screen == MenuScreen.Placeholder);
 
             SelectFirst(screen);
@@ -154,6 +185,7 @@ namespace Codebound.UI
                 MenuScreen.Credits => _creditsBackButton.gameObject,
                 MenuScreen.ConfirmNewGame => _confirmNewGameNoButton.gameObject,
                 MenuScreen.ConfirmQuit => _confirmQuitNoButton.gameObject,
+                MenuScreen.NameLook => _nameLook.InitialFocus,
                 _ => _placeholderBackButton.gameObject
             };
             EventSystem.current.SetSelectedGameObject(first);
@@ -170,11 +202,12 @@ namespace Codebound.UI
 
         bool AllReferencesAssigned()
         {
-            var references = new (string name, Object value)[]
+            var references = new (string name, UnityEngine.Object value)[]
             {
                 (nameof(_titlePanel), _titlePanel), (nameof(_settingsPanel), _settingsPanel),
                 (nameof(_creditsPanel), _creditsPanel), (nameof(_confirmNewGamePanel), _confirmNewGamePanel),
-                (nameof(_confirmQuitPanel), _confirmQuitPanel), (nameof(_placeholderPanel), _placeholderPanel),
+                (nameof(_confirmQuitPanel), _confirmQuitPanel), (nameof(_nameLookPanel), _nameLookPanel),
+                (nameof(_placeholderPanel), _placeholderPanel),
                 (nameof(_newGameButton), _newGameButton), (nameof(_continueButton), _continueButton),
                 (nameof(_settingsButton), _settingsButton), (nameof(_creditsButton), _creditsButton),
                 (nameof(_quitButton), _quitButton), (nameof(_noSaveHint), _noSaveHint),
@@ -185,6 +218,7 @@ namespace Codebound.UI
                 (nameof(_confirmNewGameNoButton), _confirmNewGameNoButton),
                 (nameof(_confirmQuitYesButton), _confirmQuitYesButton),
                 (nameof(_confirmQuitNoButton), _confirmQuitNoButton),
+                (nameof(_nameLook), _nameLook),
                 (nameof(_placeholderText), _placeholderText),
                 (nameof(_placeholderBackButton), _placeholderBackButton)
             };

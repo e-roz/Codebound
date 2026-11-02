@@ -7,6 +7,7 @@ namespace Codebound.Core
         Credits,
         ConfirmNewGame,
         ConfirmQuit,
+        NameLook,
         Placeholder
     }
 }

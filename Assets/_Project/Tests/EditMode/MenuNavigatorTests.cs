@@ -62,6 +62,7 @@ namespace Codebound.Tests
         [TestCase(MenuScreen.Settings)]
         [TestCase(MenuScreen.Credits)]
         [TestCase(MenuScreen.ConfirmNewGame)]
+        [TestCase(MenuScreen.NameLook)]
         [TestCase(MenuScreen.Placeholder)]
         public void HandleBack_OnAnyPanel_ReturnsToTitle(MenuScreen screen)
         {
