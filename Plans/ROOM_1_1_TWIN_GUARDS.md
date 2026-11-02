@@ -1,6 +1,7 @@
 # Plan: Room 1.1 "The Twin Guards" (Vertical Slice)
 
-Status: **PLAN, awaiting your check. No code written yet.**
+Status: **PLAN v2 (2026-11-03), updated after your check. Waiting for your approval. No code written yet.**
+Changes in v2 are marked **[v2]**.
 Workflow: brainstorm (done) → **plan (this file)** → check → [changes → check again] → code → check against this plan → test.
 Legend: **[CONFIRMED]** · **[RECOMMENDED]** · **[OPEN]**
 
@@ -18,6 +19,16 @@ explain reference vs value afterwards (see `DEVELOPMENT_ROADMAP.md`).
 2  Chest vaultB = vaultA;
 3  vaultA.Add("Sword");
 4  Console.WriteLine(vaultB.Count);
+```
+**[v2] Chest class panel:** a small collapsed "Chest class" box next to the code shows the class the player is not asked to
+change, so `Add` and `Count` are not magic:
+```csharp
+class Chest
+{
+    List<string> items = new List<string>();
+    public void Add(string item) => items.Add(item);
+    public int Count => items.Count;
+}
 ```
 **Predict:** "What does line 4 print?" Options: `0`, `1`, `2`, `An error`. Correct: `1`.
 Explanation: line 2 copies the *reference*, not the chest, so both names point to one chest.
@@ -47,13 +58,18 @@ Explanation: line 2 copies the *reference*, not the chest, so both names point t
 behind shared caches and settings that change behind your back."
 **Hints (3 tiers):** (1) "How many chests exist after line 2?" (2) "A class variable holds a reference, like a rope to
 the chest." (3) "Line 2 creates a second rope, not a second chest."
-**Stars:** ★ passing fix; ★★ correct prediction and hypothesis; ★★★ best fix and test pass and ≤ 1 hint tier.
+**[v2] Stars:** only the best fix passes the test, so "passing fix" and "best fix" are the same thing.
+★ = the room is completed (best fix passes). ★★ = ★ and the prediction and the cause were both right on the first try.
+★★★ = ★★ and at most 1 hint tier used. Stars never go down on replay (`UnlockRules.Record`).
 
 ## 3. Scope of this slice
 **In:** everything in §2; Predict/Observe/Investigate/Hypothesis/Fix/Prove/Debrief flow; Run, Step, Reset; code panel
-with line highlight; Keep scene with placeholder art; Watch panel; three hints; stars (not saved yet).
-**Out (later):** save system, menus, chapter map, dialogue service, name entry, real art, audio, ScriptableObject
-authoring, validator, Breakpoint/Log tools. **Room data is written in code for now** (a factory class), converted to
+with line highlight; Keep scene using the Kenney tiles already imported; Watch panel; three hints; stars.
+**[v2] Now also in (they exist already):** entering from the Keep Map's Enter room button (room 1.1 only; others stay
+"coming soon"); saving stars through `PlayerSave.progress` when the room completes; returning to the Keep Map after the
+debrief; the Silkscreen UI font and the JetBrains Mono code font; the click sound.
+**Out (later):** dialogue service, audio beyond the click, ScriptableObject authoring, validator, Breakpoint/Log
+tools, Tala/Bato dialogue. **Room data is written in code for now** (a factory class), converted to
 ScriptableObject/JSON in Phase 3. **[RECOMMENDED]**
 
 ## 4. Build phases (each ends with check and test)
@@ -85,6 +101,8 @@ Namespace `Codebound.Core`. C# 9 limits in Unity 2022.3: no `record` types.
 **Phase A done when:** all tests pass in Test Runner; Core has zero `UnityEngine` references.
 
 ### Phase B — Keep scene and code panel (Unity editor, guided by you)
+**[v2] First step:** a tiny scene loader plus a `GameSession` object that remembers the chosen room id, so the Keep Map's
+Enter room opens scene `Room` and the room can return to the `MainMenu` scene (opening on the Keep Map, not the title).
 Scene `Room` (2D). Placeholder art: coloured squares/sprites. `KeepView` listens to `TracePlayer.EventPlayed`
 and shows: chest (square) appears on ObjectCreated; guard (square with name tag) on VariableDeclared; thread
 (`LineRenderer`) on ReferenceAssigned; flash and sword icon on ObjectMutated. `CodePanel` (TextMeshPro) shows lines and
@@ -127,8 +145,44 @@ You, then one classmate, unassisted. Ask: "Explain why vaultB.Count was 1." Reco
 - Unity asmdef and test setup problems (mitigate: do Phase A setup first and run one trivial test).
 - Time: slice budget ~24 h (Week 1) plus finish in Week 2; if Phase C slips, cut Step visualisation polish first.
 
-## 8. Open questions for you to check
+## 8. Your answers (2026-11-03)
+1. Content and wording accurate: **yes**. Add the collapsed Chest class panel **[v2]**.
+2. Three fixes and consequences good for teaching: **yes**.
+3. Room data in code for now: **yes**.
+4. Check and test after **each phase**: **yes**.
+
+## 9. Original open questions
 1. Is the content in §2 technically accurate and well worded? (You are the C# expert.)
 2. Are the three fix options and their consequences right for teaching?
 3. Are you happy that room data lives in code for now (Phase 3 moves it to ScriptableObjects)?
 4. Do you want the build in four phases, with a check and test after each, or only at the end?
+
+## 10. Change after first playtest (2026-11-03): verdict for every choice
+You played Phase C and said wrong choices gave almost no feedback. Now every choice shows a big banner:
+**CORRECT!** (green), **CLOSE, BUT NOT YET** (yellow) or **NOT QUITE** (red), plus a one-line reason. It stays until the next
+choice. Tried options stay tinted. Stars are unchanged (Close counts as a wrong try).
+
+| Step | Option | Verdict |
+|---|---|---|
+| Predict | "1" | Correct (shown at once; the answer is not revealed) |
+| Predict | 0, 2, An error | Wrong |
+| Cause | "Line 2 copies the reference..." | Correct |
+| Cause | "Line 2 makes a second chest." | Close (right line, wrong idea) |
+| Cause | "Line 3 adds the sword to both chests." | Wrong |
+| Fix | `new Chest()` | Correct (after Run test) |
+| Fix | `vaultA.Remove("Sword")` | Close (hides the symptom) |
+| Fix | `vaultB = null` | Wrong (crashes) |
+
+Result: built, play-tested (wrong prediction, close cause, correct cause, close fix), 154 edit-mode tests pass.
+
+### Second playtest change: the test runs by itself
+Players did not know to press **Run test** after a fix replayed, so it looked stuck. The Run test and Pick another fix
+buttons are gone. Now: pick a fix, watch it replay, and when it ends the test runs by itself and the verdict banner shows.
+A passing fix goes straight to the debrief (Finish button). A wrong or close fix keeps the replay on screen with the fix
+list ready, so the player can pick again. Result: built, play-tested, 156 edit-mode tests pass.
+
+### Third playtest change: say what the fix must achieve
+- Players could not tell why a new chest counts as the fix. Each room now has a **Goal** line.
+- Room 1.1 goal: "Vault A keeps the Sword. Vault B stays empty."
+- It shows on the Ticket screen and in the Fix prompt ("Pick a fix. Goal: ...").
+- Checked in the game: both texts fit and wrap. 157 edit-mode tests pass.

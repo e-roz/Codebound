@@ -87,6 +87,8 @@ namespace Codebound.UI
             RefreshTitle();
             _navigator.ScreenChanged += OnScreenChanged;
             OnScreenChanged(_navigator.Current);
+
+            if (GameSession.ConsumeReturnToKeep() && _hasSave) _navigator.Show(MenuScreen.KeepWings);
         }
 
         void OnDestroy()
@@ -145,7 +147,10 @@ namespace Codebound.UI
 
         void OnEnterRoom(KeepRoom room, string label)
         {
-            ShowPlaceholder($"Room {label}, {room.title}, is coming soon.");
+            if (RoomLibrary.Has(room.id))
+                SceneLoader.LoadRoom(room.id);
+            else
+                ShowPlaceholder($"Room {label}, {room.title}, is coming soon.");
         }
 
         void OnNameLookStarted(PlayerSave save)
