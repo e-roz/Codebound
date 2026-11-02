@@ -18,6 +18,10 @@ namespace Codebound.UI
         [SerializeField] GameObject _confirmNewGamePanel;
         [SerializeField] GameObject _confirmQuitPanel;
         [SerializeField] GameObject _nameLookPanel;
+        [SerializeField] GameObject _keepWingsPanel;
+        [SerializeField] GameObject _keepRoomsPanel;
+        [SerializeField] GameObject _keepMenuPanel;
+        [SerializeField] GameObject _confirmTitlePanel;
         [SerializeField] GameObject _placeholderPanel;
 
         [Header("Title")]
@@ -45,6 +49,9 @@ namespace Codebound.UI
 
         [Header("Name and Look")]
         [SerializeField] NameLookPanelController _nameLook;
+
+        [Header("Keep map")]
+        [SerializeField] KeepMapController _keepMap;
 
         [Header("Audio")]
         [SerializeField] AudioSource _sfxSource;
@@ -74,6 +81,8 @@ namespace Codebound.UI
                 button.onClick.AddListener(PlayClick);
             _nameLook.Started += OnNameLookStarted;
             _nameLook.Cancelled += BackToTitle;
+            _keepMap.Init(_navigator);
+            _keepMap.EnterRoomRequested += OnEnterRoom;
 
             RefreshTitle();
             _navigator.ScreenChanged += OnScreenChanged;
@@ -86,6 +95,7 @@ namespace Codebound.UI
             if (_nameLook == null) return;
             _nameLook.Started -= OnNameLookStarted;
             _nameLook.Cancelled -= BackToTitle;
+            if (_keepMap != null) _keepMap.EnterRoomRequested -= OnEnterRoom;
         }
 
         void Update()
@@ -101,9 +111,9 @@ namespace Codebound.UI
             _creditsButton.onClick.AddListener(() => _navigator.Show(MenuScreen.Credits));
             _quitButton.onClick.AddListener(() => _navigator.Show(MenuScreen.ConfirmQuit));
 
-            _settingsBackButton.onClick.AddListener(BackToTitle);
-            _creditsBackButton.onClick.AddListener(BackToTitle);
-            _placeholderBackButton.onClick.AddListener(BackToTitle);
+            _settingsBackButton.onClick.AddListener(_navigator.HandleBack);
+            _creditsBackButton.onClick.AddListener(_navigator.HandleBack);
+            _placeholderBackButton.onClick.AddListener(_navigator.HandleBack);
             _confirmNewGameNoButton.onClick.AddListener(BackToTitle);
             _confirmQuitNoButton.onClick.AddListener(BackToTitle);
 
@@ -130,7 +140,12 @@ namespace Codebound.UI
 
         void OnContinue()
         {
-            ShowPlaceholder($"Welcome back, {_save.playerName}. The Keep Map is coming soon.");
+            _navigator.Show(MenuScreen.KeepWings);
+        }
+
+        void OnEnterRoom(KeepRoom room, string label)
+        {
+            ShowPlaceholder($"Room {label}, {room.title}, is coming soon.");
         }
 
         void OnNameLookStarted(PlayerSave save)
@@ -149,7 +164,7 @@ namespace Codebound.UI
             _save = save;
             _hasSave = true;
             RefreshTitle();
-            ShowPlaceholder($"Welcome, {save.playerName}. The prologue is coming soon.");
+            _navigator.Show(MenuScreen.KeepWings);
         }
 
         void ShowPlaceholder(string message)
@@ -182,6 +197,12 @@ namespace Codebound.UI
             _confirmQuitPanel.SetActive(screen == MenuScreen.ConfirmQuit);
             _nameLookPanel.SetActive(screen == MenuScreen.NameLook);
             _placeholderPanel.SetActive(screen == MenuScreen.Placeholder);
+            _keepWingsPanel.SetActive(screen == MenuScreen.KeepWings);
+            _keepRoomsPanel.SetActive(screen == MenuScreen.KeepRooms);
+            _keepMenuPanel.SetActive(screen == MenuScreen.KeepMenu);
+            _confirmTitlePanel.SetActive(screen == MenuScreen.ConfirmTitle);
+
+            if (screen == MenuScreen.KeepWings || screen == MenuScreen.KeepRooms) _keepMap.Refresh(_save);
 
             SelectFirst(screen);
         }
@@ -198,6 +219,10 @@ namespace Codebound.UI
                 MenuScreen.ConfirmNewGame => _confirmNewGameNoButton.gameObject,
                 MenuScreen.ConfirmQuit => _confirmQuitNoButton.gameObject,
                 MenuScreen.NameLook => _nameLook.InitialFocus,
+                MenuScreen.KeepWings => _keepMap.WingsFocus,
+                MenuScreen.KeepRooms => _keepMap.RoomsFocus,
+                MenuScreen.KeepMenu => _keepMap.MenuFocus,
+                MenuScreen.ConfirmTitle => _keepMap.ConfirmFocus,
                 _ => _placeholderBackButton.gameObject
             };
             EventSystem.current.SetSelectedGameObject(first);
@@ -230,7 +255,9 @@ namespace Codebound.UI
                 (nameof(_confirmNewGameNoButton), _confirmNewGameNoButton),
                 (nameof(_confirmQuitYesButton), _confirmQuitYesButton),
                 (nameof(_confirmQuitNoButton), _confirmQuitNoButton),
-                (nameof(_nameLook), _nameLook),
+                (nameof(_nameLook), _nameLook), (nameof(_keepMap), _keepMap),
+                (nameof(_keepWingsPanel), _keepWingsPanel), (nameof(_keepRoomsPanel), _keepRoomsPanel),
+                (nameof(_keepMenuPanel), _keepMenuPanel), (nameof(_confirmTitlePanel), _confirmTitlePanel),
                 (nameof(_sfxSource), _sfxSource), (nameof(_clickClip), _clickClip),
                 (nameof(_placeholderText), _placeholderText),
                 (nameof(_placeholderBackButton), _placeholderBackButton)

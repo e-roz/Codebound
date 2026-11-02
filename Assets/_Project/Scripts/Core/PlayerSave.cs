@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Codebound.Core
 {
@@ -10,7 +11,13 @@ namespace Codebound.Core
         public int version = CurrentVersion;
         public string playerName;
         public int lookId;
+        public List<RoomProgress> progress = new List<RoomProgress>();
 
         public bool IsValid() => version >= 1 && !string.IsNullOrWhiteSpace(playerName);
+
+        public void EnsureProgress()
+        {
+            if (progress == null) progress = new List<RoomProgress>();
+        }
     }
 }

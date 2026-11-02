@@ -8,6 +8,10 @@ namespace Codebound.Core
         ConfirmNewGame,
         ConfirmQuit,
         NameLook,
-        Placeholder
+        Placeholder,
+        KeepWings,
+        KeepRooms,
+        KeepMenu,
+        ConfirmTitle
     }
 }

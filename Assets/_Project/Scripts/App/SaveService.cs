@@ -56,6 +56,7 @@ namespace Codebound.App
             {
                 var parsed = JsonUtility.FromJson<PlayerSave>(File.ReadAllText(SavePath));
                 if (parsed == null || !parsed.IsValid()) return false;
+                parsed.EnsureProgress();
                 save = parsed;
                 return true;
             }

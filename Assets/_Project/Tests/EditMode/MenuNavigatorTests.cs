@@ -73,5 +73,66 @@ namespace Codebound.Tests
 
             Assert.AreEqual(MenuScreen.Title, navigator.Current);
         }
+
+        [Test]
+        public void HandleBack_FollowsTheKeepMapScreens()
+        {
+            var navigator = new MenuNavigator();
+
+            navigator.Show(MenuScreen.KeepWings);
+            navigator.HandleBack();
+            Assert.AreEqual(MenuScreen.KeepMenu, navigator.Current);
+
+            navigator.HandleBack();
+            Assert.AreEqual(MenuScreen.KeepWings, navigator.Current);
+
+            navigator.Show(MenuScreen.KeepRooms);
+            navigator.HandleBack();
+            Assert.AreEqual(MenuScreen.KeepWings, navigator.Current);
+
+            navigator.Show(MenuScreen.KeepMenu);
+            navigator.Show(MenuScreen.ConfirmTitle);
+            navigator.HandleBack();
+            Assert.AreEqual(MenuScreen.KeepMenu, navigator.Current);
+        }
+
+        [Test]
+        public void SettingsOpenedFromKeepMenu_GoesBackToKeepMenu()
+        {
+            var navigator = new MenuNavigator();
+            navigator.Show(MenuScreen.KeepMenu);
+            navigator.Show(MenuScreen.Settings);
+
+            navigator.HandleBack();
+
+            Assert.AreEqual(MenuScreen.KeepMenu, navigator.Current);
+        }
+
+        [Test]
+        public void SettingsOpenedFromTitle_StillGoesBackToTitle()
+        {
+            var navigator = new MenuNavigator();
+            navigator.Show(MenuScreen.KeepMenu);
+            navigator.Show(MenuScreen.Settings);
+            navigator.HandleBack();
+            navigator.Show(MenuScreen.Title);
+            navigator.Show(MenuScreen.Settings);
+
+            navigator.HandleBack();
+
+            Assert.AreEqual(MenuScreen.Title, navigator.Current);
+        }
+
+        [Test]
+        public void PlaceholderShownFromRoomList_GoesBackToRoomList()
+        {
+            var navigator = new MenuNavigator();
+            navigator.Show(MenuScreen.KeepRooms);
+            navigator.Show(MenuScreen.Placeholder);
+
+            navigator.HandleBack();
+
+            Assert.AreEqual(MenuScreen.KeepRooms, navigator.Current);
+        }
     }
 }

@@ -1,0 +1,40 @@
+using System.Collections.Generic;
+using Codebound.Core;
+using NUnit.Framework;
+
+namespace Codebound.Tests
+{
+    public class KeepCatalogSeedTests
+    {
+        [Test]
+        public void HasSevenWings_VaultsAndGatesPlayable_RestSealed()
+        {
+            var chapters = KeepCatalogSeed.Create();
+
+            Assert.AreEqual(7, chapters.Count);
+            Assert.AreEqual(6, chapters[0].rooms.Count);
+            Assert.AreEqual(4, chapters[1].rooms.Count);
+            Assert.IsFalse(chapters[0].isSealed);
+            Assert.IsFalse(chapters[1].isSealed);
+            for (var i = 2; i < chapters.Count; i++) Assert.IsTrue(chapters[i].isSealed, chapters[i].name);
+        }
+
+        [Test]
+        public void EveryRoomHasUniqueIdAndFullDetails()
+        {
+            var seen = new HashSet<string>();
+            foreach (var chapter in KeepCatalogSeed.Create())
+            {
+                Assert.IsNotEmpty(chapter.name);
+                foreach (var room in chapter.rooms)
+                {
+                    Assert.IsTrue(seen.Add(room.id), "Duplicate id " + room.id);
+                    Assert.IsNotEmpty(room.title, room.id);
+                    Assert.IsNotEmpty(room.roomType, room.id);
+                    Assert.IsNotEmpty(room.concept, room.id);
+                }
+            }
+            Assert.AreEqual(10, seen.Count);
+        }
+    }
+}

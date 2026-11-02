@@ -2,6 +2,8 @@
     "name": "Codebound.Editor",
     "rootNamespace": "Codebound.EditorTools",
     "references": [
+        "Codebound.Core",
+        "Codebound.App",
         "Codebound.UI",
         "Unity.TextMeshPro",
         "UnityEngine.UI"

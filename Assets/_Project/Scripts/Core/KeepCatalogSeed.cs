@@ -1,0 +1,41 @@
+using System.Collections.Generic;
+
+namespace Codebound.Core
+{
+    // Starting content for the Keep catalog asset (see LESSON_PLAN.md). The asset is the live data; edit it there.
+    public static class KeepCatalogSeed
+    {
+        public static List<KeepChapter> Create()
+        {
+            return new List<KeepChapter>
+            {
+                Chapter("vaults", "The Vaults",
+                    Room("1-1", "The Twin Guards", "Predict", "Reference types"),
+                    Room("1-2", "Copy That", "Trace", "Value types vs references"),
+                    Room("1-3", "The Shared Inventory", "Bug hunt", "Sharing a List by mistake"),
+                    Room("1-4", "Copy of a Copy", "Repair", "Shallow vs deep copy"),
+                    Room("1-5", "The Empty Chest", "Bug hunt", "NullReferenceException"),
+                    Room("1-6", "Who Changed My Guard?", "Interview", "Mutation vs reassignment")),
+                Chapter("gates", "The Gates",
+                    Room("2-1", "The Gate Rules", "Predict", "&& and || precedence"),
+                    Room("2-2", "The Last Guard", "Bug hunt", "Off-by-one errors"),
+                    Room("2-4", "The Toll Boundary", "Repair", "> vs >= at the boundary"),
+                    Room("2-5", "The Split Treasure", "Bug hunt", "Integer division and zero")),
+                Sealed("workshop", "The Workshop"),
+                Sealed("archive", "The Archive"),
+                Sealed("great-hall", "The Great Hall"),
+                Sealed("towers", "The Towers"),
+                Sealed("architect", "Architect's Chamber")
+            };
+        }
+
+        static KeepChapter Chapter(string id, string name, params KeepRoom[] rooms) =>
+            new KeepChapter { id = id, name = name, rooms = new List<KeepRoom>(rooms) };
+
+        static KeepChapter Sealed(string id, string name) =>
+            new KeepChapter { id = id, name = name, isSealed = true };
+
+        static KeepRoom Room(string id, string title, string roomType, string concept) =>
+            new KeepRoom { id = id, title = title, roomType = roomType, concept = concept };
+    }
+}

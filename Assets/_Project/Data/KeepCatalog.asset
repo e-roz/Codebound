@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4aaae0431711304d838dc9e55acb57a, type: 3}
+  m_Name: KeepCatalog
+  m_EditorClassIdentifier: 
+  chapters:
+  - id: vaults
+    name: The Vaults
+    isSealed: 0
+    rooms:
+    - id: 1-1
+      title: The Twin Guards
+      roomType: Predict
+      concept: Reference types
+    - id: 1-2
+      title: Copy That
+      roomType: Trace
+      concept: Value types vs references
+    - id: 1-3
+      title: The Shared Inventory
+      roomType: Bug hunt
+      concept: Sharing a List by mistake
+    - id: 1-4
+      title: Copy of a Copy
+      roomType: Repair
+      concept: Shallow vs deep copy
+    - id: 1-5
+      title: The Empty Chest
+      roomType: Bug hunt
+      concept: NullReferenceException
+    - id: 1-6
+      title: Who Changed My Guard?
+      roomType: Interview
+      concept: Mutation vs reassignment
+  - id: gates
+    name: The Gates
+    isSealed: 0
+    rooms:
+    - id: 2-1
+      title: The Gate Rules
+      roomType: Predict
+      concept: '&& and || precedence'
+    - id: 2-2
+      title: The Last Guard
+      roomType: Bug hunt
+      concept: Off-by-one errors
+    - id: 2-4
+      title: The Toll Boundary
+      roomType: Repair
+      concept: '> vs >= at the boundary'
+    - id: 2-5
+      title: The Split Treasure
+      roomType: Bug hunt
+      concept: Integer division and zero
+  - id: workshop
+    name: The Workshop
+    isSealed: 1
+    rooms: []
+  - id: archive
+    name: The Archive
+    isSealed: 1
+    rooms: []
+  - id: great-hall
+    name: The Great Hall
+    isSealed: 1
+    rooms: []
+  - id: towers
+    name: The Towers
+    isSealed: 1
+    rooms: []
+  - id: architect
+    name: Architect's Chamber
+    isSealed: 1
+    rooms: []

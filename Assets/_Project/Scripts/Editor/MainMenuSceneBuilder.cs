@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Codebound.EditorTools
 {
-    public static class MainMenuSceneBuilder
+    public static partial class MainMenuSceneBuilder
     {
         const string ScenesFolder = "Assets/_Project/Scenes";
         const string ScenePath = ScenesFolder + "/MainMenu.unity";
@@ -39,6 +39,7 @@ namespace Codebound.EditorTools
             }
 
             _uiFont = FontAssetBuilder.LoadUiFont();
+            var catalog = LoadOrCreateCatalog();
             _frameBrown = AssetDatabase.LoadAssetAtPath<Sprite>(ArtFolder + "/UI/frame_brown.png");
             _frameDark = AssetDatabase.LoadAssetAtPath<Sprite>(ArtFolder + "/UI/frame_dark.png");
             var look1 = AssetDatabase.LoadAssetAtPath<Sprite>(ArtFolder + "/Characters/warden_look1.png");
@@ -72,6 +73,10 @@ namespace Codebound.EditorTools
             var confirmQuit = CreatePanel(canvas, "ConfirmQuitPanel");
             var nameLookPanel = CreatePanel(canvas, "NameLookPanel");
             var placeholder = CreatePanel(canvas, "PlaceholderPanel");
+            var keepWings = CreatePanel(canvas, "KeepWingsPanel");
+            var keepRooms = CreatePanel(canvas, "KeepRoomsPanel");
+            var keepMenu = CreatePanel(canvas, "KeepMenuPanel");
+            var confirmTitle = CreatePanel(canvas, "ConfirmTitlePanel");
 
             CreateText(title.transform, "LogoText", "CODEBOUND", 120, new Vector2(0, 380), new Vector2(1400, 160));
             CreateText(title.transform, "SubtitleText", "The Programming Dungeon", 48, new Vector2(0, 270), new Vector2(900, 60));
@@ -141,6 +146,8 @@ namespace Codebound.EditorTools
             Assign(nameLookSo, "_backButton", nameLookBack);
             nameLookSo.ApplyModifiedPropertiesWithoutUndo();
 
+            var keepMap = BuildKeepMap(keepWings, keepRooms, keepMenu, confirmTitle, catalog, look1, look2);
+
             var placeholderText = CreateText(placeholder.transform, "PlaceholderText", "Coming soon.", 48,
                 new Vector2(0, 60), new Vector2(1200, 300));
             var placeholderBack = CreateButton(placeholder.transform, "BackButton", "Back", new Vector2(0, -250), new Vector2(400, 70));
@@ -158,6 +165,11 @@ namespace Codebound.EditorTools
             Assign(so, "_placeholderPanel", placeholder);
             Assign(so, "_nameLookPanel", nameLookPanel);
             Assign(so, "_nameLook", nameLook);
+            Assign(so, "_keepMap", keepMap);
+            Assign(so, "_keepWingsPanel", keepWings);
+            Assign(so, "_keepRoomsPanel", keepRooms);
+            Assign(so, "_keepMenuPanel", keepMenu);
+            Assign(so, "_confirmTitlePanel", confirmTitle);
             Assign(so, "_newGameButton", newGame);
             Assign(so, "_continueButton", continueButton);
             Assign(so, "_settingsButton", settingsButton);

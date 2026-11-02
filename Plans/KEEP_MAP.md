@@ -5,6 +5,37 @@ Legend: **[CONFIRMED]** · **[RECOMMENDED]** · **[OPEN]**
 
 ---
 
+## 0. First version scope (drafted 2026-11-03, waiting for your approval)
+Layout approved from the mockup: **Screen 1 = wing picker, Screen 2 = room picker** (one scene, two panels).
+Built with plain buttons using the existing brown frames and Silkscreen font. No Keep drawing yet (§11 step 8).
+
+| Item | First version |
+|---|---|
+| Entry | Name + Look "Start" and Title "Continue" both go to the Keep Map (replaces the "coming soon" placeholders) |
+| Wings | 7 buttons. Vaults open, Gates locked until Ch 1 done, other 5 sealed ("Sealed, coming soon") |
+| Rooms | Vaults shows 6 doors, Gates shows 4. Door states: locked / next / completed with stars |
+| Room info | Click a door: title, type, concept, Enter room |
+| Enter room | Only 1.1 will exist soon; until then Enter shows "Room coming soon" |
+| Locked titles | Hidden as "???" until unlocked (the recommended answer in section 13) |
+| Stars | Total shown at top (earned / possible) |
+| Top bar | Player name, Look portrait, stars, Menu (Resume, Settings, Back to Title with confirm) |
+| Tala line | One fixed line per state for now; story lines come later |
+| Data | Chapters and rooms come from data (ScriptableObjects), no room names typed into UI scripts |
+| Saving | Save file gets a progress list (room id, best stars); old saves without it load as "nothing completed" |
+| Tests | `UnlockRules` (fresh game, mid-chapter, chapter complete, corrupted entry) written first |
+
+Not in the first version: unlock animation, chapter-complete story moment, sounds beyond the click, real art.
+
+### Result of first version (2026-11-03)
+Built and play-tested; 103 edit-mode tests pass. Notes against the plan above:
+- Catalog is a ScriptableObject at `Assets/_Project/Data/KeepCatalog.asset`, created from `KeepCatalogSeed` the first time the scene is built. It is never overwritten, so edit rooms in the asset.
+- Names `KeepRoom` / `KeepChapter` are used so they do not clash with the future `RoomDefinition` in the Room 1.1 plan.
+- Locked rooms hide title, type and concept as "???". Their Enter button is greyed.
+- Added (not in plan): Esc on the wing picker opens the Keep menu; Esc elsewhere goes back one step; Settings opened from the Keep menu returns to it.
+- Sealed and locked wings ignore clicks (no special "locked" sound yet).
+- Checked by hand: fresh save, wing and room screens, locked-room details, Enter room placeholder, Keep menu, Settings return, title confirm, Continue, and a fake save with Chapter 1 done (Gates unlocked, 14 / 30 stars).
+- Not checked by hand: clicking a sealed wing, 1280x720, keyboard-only navigation, completing a room in play (room completion does not exist yet; `UnlockRules.Record` is unit-tested).
+
 ## 1. Purpose
 The hub between rooms. The player sees the Keep, their progress, and picks the next room. It must show **where they
 are in the story**, make **locked vs open vs completed** obvious, and let them replay any finished room. It also shows
