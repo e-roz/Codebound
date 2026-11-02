@@ -105,6 +105,12 @@ Look screen (New Game goes to a placeholder "Name + Look coming" screen that ret
 **Input:** the template uses the legacy Input Manager, so the scene uses the standard `EventSystem` with
 `StandaloneInputModule`. Revisit only if we adopt the new Input System (D-11).
 
+## 9c. How the scene is built (changed at the project lead's request)
+Instead of clicking the scene together by hand, an editor script (`Assets/_Project/Scripts/Editor/MainMenuSceneBuilder.cs`,
+menu **Codebound → Build Main Menu Scene**) creates the whole placeholder scene and wires every Inspector field of
+`MainMenuController`. Re-running it replaces `MainMenu.unity` (it asks first). Real art later replaces the placeholder
+visuals; the structure and names stay.
+
 ## 10. Build steps (for when it is time)
 1. Create `MainMenu` scene with Canvas and placeholder panels (coloured rectangles).
 2. Add buttons, wire navigation and focus, Esc handling.
