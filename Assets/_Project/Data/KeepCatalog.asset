@@ -85,6 +85,18 @@ MonoBehaviour:
       title: The Stack of Clues
       roomType: Trace
       concept: Reading a stack trace
+    - id: 3-4
+      title: The Silent Failure
+      roomType: Bug hunt
+      concept: Swallowed exceptions
+    - id: 3-5
+      title: Red, Then Green
+      roomType: Repair
+      concept: Test first
+    - id: 3-6
+      title: The Forty-Line Monster
+      roomType: Code review
+      concept: One method, one job
   - id: archive
     name: The Archive
     isSealed: 1

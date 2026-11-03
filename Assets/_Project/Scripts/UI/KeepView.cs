@@ -11,6 +11,8 @@ namespace Codebound.UI
     {
         static readonly Color ErrorColor = new Color(1f, 0.45f, 0.4f);
         static readonly Color FlashColor = new Color(1f, 0.85f, 0.3f);
+        static readonly Color GreenColor = new Color(0.5f, 0.9f, 0.55f);
+        static readonly Color ReaderColor = new Color(0.7f, 0.75f, 0.85f);
 
         [SerializeField] RectTransform[] _guardRoots;
         [SerializeField] TMP_Text[] _guardLabels;
@@ -20,6 +22,7 @@ namespace Codebound.UI
         [SerializeField] TMP_Text[] _chestLabels;
         [SerializeField] GameObject[] _chestSwords;
         [SerializeField] TMP_Text[] _gateRows;
+        [SerializeField] TMP_Text[] _logRows;
         [SerializeField] TMP_Text _captionText;
         [SerializeField] TMP_Text _outputText;
         [SerializeField] float _guardHalfHeight = 90f;
@@ -68,6 +71,7 @@ namespace Codebound.UI
             }
 
             RenderGateRows(state);
+            RenderReport(state);
 
             _captionText.text = state.Caption;
             _outputText.color = Color.white;
@@ -97,6 +101,53 @@ namespace Codebound.UI
 
                 _gateRows[i].text = lines[i];
                 _gateRows[i].color = i == count - 1 ? FlashColor : Color.white;
+            }
+        }
+
+        // Log Reader / Test Runner: a header row, then the newest lines that fit.
+        void RenderReport(KeepState state)
+        {
+            if (_logRows == null || _logRows.Length == 0) return;
+
+            var report = state.Report;
+            var tests = report.Count > 0 && (report[0].Kind == ReportKind.Red || report[0].Kind == ReportKind.Green);
+            var lineRows = _logRows.Length - 1;
+            var first = Mathf.Max(0, report.Count - lineRows);
+
+            for (var i = 0; i < _logRows.Length; i++)
+            {
+                var index = first + i - 1;
+                var used = state.HasReport && (i == 0 || index < report.Count);
+                _logRows[i].gameObject.SetActive(used);
+                if (!used) continue;
+
+                if (i == 0)
+                {
+                    _logRows[i].text = tests ? "TEST RUNNER" : report.Count == 0 ? "LOG READER: empty" : "LOG READER";
+                    _logRows[i].color = ReaderColor;
+                    continue;
+                }
+
+                var line = report[index];
+                switch (line.Kind)
+                {
+                    case ReportKind.Red:
+                        _logRows[i].text = $"RED    {line.Text}";
+                        _logRows[i].color = ErrorColor;
+                        break;
+                    case ReportKind.Green:
+                        _logRows[i].text = $"GREEN  {line.Text}";
+                        _logRows[i].color = GreenColor;
+                        break;
+                    case ReportKind.Error:
+                        _logRows[i].text = $"> {line.Text}";
+                        _logRows[i].color = ErrorColor;
+                        break;
+                    default:
+                        _logRows[i].text = $"> {line.Text}";
+                        _logRows[i].color = Color.white;
+                        break;
+                }
             }
         }
 

@@ -1,6 +1,6 @@
 # Plan: Chapter 3 "The Workshop" (Functions & Errors)
 
-Status: **APPROVED (2026-11-04). Batch A (3.1, 3.2, 3.3) implemented. Batch B (3.4 to 3.6, Log Reader, Test Runner panel) not started.**
+Status: **APPROVED (2026-11-04). Batch A (3.1 to 3.3) and Batch B (3.4 to 3.6) implemented. Not committed: Batch B.**
 Workflow: brainstorm (done) → **plan (this file)** → check → [changes → check again] → code → check against this plan → test.
 All wording is a draft for you to change. Room details (exact code, options, hints) get written per batch after you approve this overview.
 
@@ -54,3 +54,12 @@ Chapters 1 and 2 are done and pushed (12 rooms, 36 stars). Chapter 3 is in the l
 - **Keep map:** The Workshop is open (unlocks after Chapter 2 is complete) with 3 rooms for now. Totals: 15 rooms, 45 stars.
 - Line limit stays 35 characters. Expression-bodied methods in 3.3 use a 2-space indent to fit.
 - 282 tests pass. Played 3.1 to the end (3 stars), 3.2 to the end, 3.3 to the crash. The symptom-only and wrong fixes were not played in the game.
+
+## 8. Batch B: what was built
+- **New events:** `LogOpened`, `LogAppended`, `TestRan`. `KeepState` keeps a report list (Log, Error, Red, Green) apart from the watch rows.
+- **Log Reader / Test Runner panel:** 3 text rows in the Keep (header "LOG READER" or "TEST RUNNER"). Log lines start with ">", ERROR lines are red. Tests show RED / GREEN lines.
+- **3.4 The Silent Failure:** an empty catch swallows FileNotFoundException, so the log stays empty. Best fix catches it and logs the file name.
+- **3.5 Red, Then Green:** `Add` subtracts. Fixes are test-first choices: failing test then fix (best), fix then test (symptom), a test that cannot fail (wrong).
+- **3.6 The Forty-Line Monster:** 8 lines, 4 jobs shown as rows. Best fix splits into four named methods.
+- **Totals:** Workshop 6 rooms, 18 rooms, 54 stars. 308 tests pass.
+- **Played in Unity:** 3.4 and 3.5 best-fix paths (panel renders correctly), 3.6 up to the predict step. Not played: symptom-only and wrong fixes, 3.6 fix path. After the play test, 3.6 got one extra output event ("4") so the predict message no longer says "it printed ." (not re-run).

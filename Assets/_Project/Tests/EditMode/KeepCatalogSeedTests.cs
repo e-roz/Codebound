@@ -16,7 +16,7 @@ namespace Codebound.Tests
             Assert.AreEqual(6, chapters[1].rooms.Count);
             Assert.IsFalse(chapters[0].isSealed);
             Assert.IsFalse(chapters[1].isSealed);
-            Assert.AreEqual(3, chapters[2].rooms.Count);
+            Assert.AreEqual(6, chapters[2].rooms.Count);
             Assert.IsFalse(chapters[2].isSealed);
             for (var i = 3; i < chapters.Count; i++) Assert.IsTrue(chapters[i].isSealed, chapters[i].name);
         }
@@ -36,7 +36,7 @@ namespace Codebound.Tests
                     Assert.IsNotEmpty(room.concept, room.id);
                 }
             }
-            Assert.AreEqual(15, seen.Count);
+            Assert.AreEqual(18, seen.Count);
         }
     }
 }

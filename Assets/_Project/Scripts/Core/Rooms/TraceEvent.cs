@@ -23,7 +23,10 @@ namespace Codebound.Core
         ArraySet,
         OutputAppended,
         TextSet,
-        CallReturned
+        CallReturned,
+        LogOpened,
+        LogAppended,
+        TestRan
     }
 
     public sealed class TraceEvent
@@ -120,6 +123,18 @@ namespace Codebound.Core
         // A method call and the value it hands back, such as Heal(50) returning 70.
         public static TraceEvent CallReturned(int line, string call, string result) =>
             new TraceEvent(TraceEventType.CallReturned, line, call, NoObject, result);
+
+        // The Log Reader opens. If nothing was logged it shows an empty log.
+        public static TraceEvent LogOpened(int line) =>
+            new TraceEvent(TraceEventType.LogOpened, line, null, NoObject, null);
+
+        // One line written to the log. Text that starts with ERROR is drawn in red.
+        public static TraceEvent LogAppended(int line, string text) =>
+            new TraceEvent(TraceEventType.LogAppended, line, null, NoObject, text);
+
+        // One result in the Test Runner: red (failed) or green (passed).
+        public static TraceEvent TestRan(int line, string name, bool passed) =>
+            new TraceEvent(TraceEventType.TestRan, line, null, NoObject, name, passed ? 1 : 0);
 
         public static TraceEvent OutputAppended(int line, string text) =>
             new TraceEvent(TraceEventType.OutputAppended, line, null, NoObject, text);

@@ -95,6 +95,14 @@ namespace Codebound.EditorTools
                 UseFont(gateRows[g], codeFont);
             }
 
+            // Log Reader / Test Runner (Chapter 3): a header and two lines under the rows.
+            var logRows = new TextMeshProUGUI[3];
+            for (var l = 0; l < logRows.Length; l++)
+            {
+                logRows[l] = CreateText(canvas, $"LogRow{l + 1}", string.Empty, 30, new Vector2(-430, -20 - 55 * l), new Vector2(900, 50));
+                UseFont(logRows[l], codeFont);
+            }
+
             var caption = CreateText(canvas, "CaptionText", string.Empty, 30, new Vector2(-430, -215), new Vector2(940, 70), HintColor);
             var output = CreateText(canvas, "OutputText", string.Empty, 34, new Vector2(-430, -275), new Vector2(940, 50));
 
@@ -109,6 +117,7 @@ namespace Codebound.EditorTools
             AssignArray(keepSo, "_chestLabels", chestLabels);
             AssignArray(keepSo, "_chestSwords", chestSwords);
             AssignArray(keepSo, "_gateRows", gateRows);
+            AssignArray(keepSo, "_logRows", logRows);
             Assign(keepSo, "_captionText", caption);
             Assign(keepSo, "_outputText", output);
             keepSo.ApplyModifiedPropertiesWithoutUndo();

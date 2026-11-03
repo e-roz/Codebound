@@ -125,6 +125,21 @@ namespace Codebound.Core
         public string Describe() => $"{TypeName} #{Id} ({Field} {Value})";
     }
 
+    public enum ReportKind { Log, Error, Red, Green }
+
+    // One line of the Log Reader or the Test Runner.
+    public sealed class ReportLine
+    {
+        public ReportLine(string text, ReportKind kind)
+        {
+            Text = text;
+            Kind = kind;
+        }
+
+        public string Text { get; }
+        public ReportKind Kind { get; }
+    }
+
     // What the Keep looks like after the trace events played so far. The view only draws this.
     public sealed class KeepState
     {
@@ -134,6 +149,7 @@ namespace Codebound.Core
         readonly List<BoolVariableState> _boolVariables = new List<BoolVariableState>();
         readonly List<EvaluationStep> _steps = new List<EvaluationStep>();
         readonly List<string> _calls = new List<string>();
+        readonly List<ReportLine> _report = new List<ReportLine>();
         readonly List<NumberVariableState> _numberVariables = new List<NumberVariableState>();
         readonly List<ArrayVariableState> _arrayVariables = new List<ArrayVariableState>();
 
@@ -142,6 +158,9 @@ namespace Codebound.Core
         public IReadOnlyList<BoolVariableState> BoolVariables => _boolVariables;
         public IReadOnlyList<EvaluationStep> Steps => _steps;
         public IReadOnlyList<string> Calls => _calls;
+        // The Log Reader / Test Runner panel. HasReport is true once it was opened, even with no lines.
+        public IReadOnlyList<ReportLine> Report => _report;
+        public bool HasReport { get; private set; }
         public IReadOnlyList<NumberVariableState> NumberVariables => _numberVariables;
         public IReadOnlyList<ArrayVariableState> ArrayVariables => _arrayVariables;
         // True when the Keep shows text rows (rooms about rules and loops) instead of guards and chests.
@@ -215,6 +234,8 @@ namespace Codebound.Core
             _boolVariables.Clear();
             _steps.Clear();
             _calls.Clear();
+            _report.Clear();
+            HasReport = false;
             _numberVariables.Clear();
             _arrayVariables.Clear();
             CurrentLine = 0;
@@ -318,6 +339,20 @@ namespace Codebound.Core
                     if (array == null) _arrayVariables.Add(new ArrayVariableState(e.Variable, e.Text));
                     else array.Contents = e.Text;
                     Caption = $"{e.Variable} holds {e.Text}.";
+                    break;
+                case TraceEventType.LogOpened:
+                    HasReport = true;
+                    Caption = "The log has no entries.";
+                    break;
+                case TraceEventType.LogAppended:
+                    HasReport = true;
+                    _report.Add(new ReportLine(e.Text, e.Text.StartsWith("ERROR") ? ReportKind.Error : ReportKind.Log));
+                    Caption = $"The log says: {e.Text}.";
+                    break;
+                case TraceEventType.TestRan:
+                    HasReport = true;
+                    _report.Add(new ReportLine(e.Text, e.Value != 0 ? ReportKind.Green : ReportKind.Red));
+                    Caption = $"Test {e.Text} is {(e.Value != 0 ? "green" : "red")}.";
                     break;
                 case TraceEventType.CallReturned:
                     _calls.Add($"{e.Variable} returns {e.Text}");
