@@ -24,6 +24,16 @@ namespace Codebound.UI
         [SerializeField] float _guardHalfHeight = 90f;
         [SerializeField] float _chestHalfHeight = 100f;
 
+        void Awake()
+        {
+            foreach (var label in _chestLabels)
+            {
+                label.enableAutoSizing = true;
+                label.fontSizeMax = label.fontSize;
+                label.fontSizeMin = 16f;
+            }
+        }
+
         public void Render(KeepState state)
         {
             for (var i = 0; i < _guardRoots.Length; i++)
@@ -49,8 +59,11 @@ namespace Codebound.UI
                 _chestRoots[j].gameObject.SetActive(used);
                 if (!used) continue;
 
-                _chestLabels[j].text = $"{state.Chests[j].TypeName} #{state.Chests[j].Id}";
-                _chestSwords[j].SetActive(state.Chests[j].ItemCount > 0);
+                var chest = state.Chests[j];
+                _chestLabels[j].text = $"{chest.TypeName} #{chest.Id}" +
+                                       (chest.ItemCount > 0 ? $": {string.Join(", ", chest.Items)}" : string.Empty);
+                // The items are named in the label, so the generic sword icon would only mislead.
+                _chestSwords[j].SetActive(false);
             }
 
             _captionText.text = state.Caption;

@@ -104,8 +104,8 @@ namespace Codebound.Tests
             Assert.IsTrue(RoomLibrary.Has("1-1"));
             Assert.IsTrue(RoomLibrary.TryCreate("1-1", out var room));
             Assert.AreEqual("The Twin Guards", room.Title);
-            Assert.IsFalse(RoomLibrary.Has("1-3"));
-            Assert.IsFalse(RoomLibrary.TryCreate("1-3", out _));
+            Assert.IsFalse(RoomLibrary.Has("1-4"));
+            Assert.IsFalse(RoomLibrary.TryCreate("1-4", out _));
         }
 
         [Test]

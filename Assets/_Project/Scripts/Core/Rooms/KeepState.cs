@@ -22,7 +22,13 @@ namespace Codebound.Core
 
         public int Id { get; }
         public string TypeName { get; }
-        public int ItemCount { get; internal set; }
+        readonly List<string> _items = new List<string>();
+
+        public IReadOnlyList<string> Items => _items;
+        public int ItemCount => _items.Count;
+
+        internal void Add(string item) => _items.Add(item);
+        internal void Remove(string item) => _items.Remove(item);
     }
 
     // What the Keep looks like after the trace events played so far. The view only draws this.
@@ -45,13 +51,21 @@ namespace Codebound.Core
             return -1;
         }
 
+        string TypeName(int objectId)
+        {
+            var index = ChestIndex(objectId);
+            return index >= 0 ? _chests[index].TypeName : "Chest";
+        }
+
+        string Noun(int objectId) => TypeName(objectId).ToLowerInvariant();
+
         public IReadOnlyList<string> WatchLines()
         {
             var lines = new List<string>();
             foreach (var guard in _guards)
                 lines.Add(guard.Value.HasValue ? $"{guard.Name} = {guard.Value.Value}"
                     : guard.IsNull ? $"{guard.Name} -> null"
-                    : guard.ObjectId != TraceEvent.NoObject ? $"{guard.Name} -> chest #{guard.ObjectId}"
+                    : guard.ObjectId != TraceEvent.NoObject ? $"{guard.Name} -> {Noun(guard.ObjectId)} #{guard.ObjectId}"
                     : $"{guard.Name} -> (nothing yet)");
             return lines;
         }
@@ -89,7 +103,7 @@ namespace Codebound.Core
                         target.ObjectId = e.ObjectId;
                         target.IsNull = false;
                     }
-                    Caption = $"{e.Variable} now points to chest #{e.ObjectId}.";
+                    Caption = $"{e.Variable} now points to {Noun(e.ObjectId)} #{e.ObjectId}.";
                     break;
                 case TraceEventType.NullAssigned:
                     var nulled = FindGuard(e.Variable);
@@ -102,8 +116,8 @@ namespace Codebound.Core
                     break;
                 case TraceEventType.ObjectMutated:
                     var index = ChestIndex(e.ObjectId);
-                    if (index >= 0) _chests[index].ItemCount += ItemChange(e.Text);
-                    Caption = $"Chest #{e.ObjectId}: {e.Text}.";
+                    if (index >= 0) ApplyItemChange(_chests[index], e.Text);
+                    Caption = $"{TypeName(e.ObjectId)} #{e.ObjectId}: {e.Text}.";
                     break;
                 case TraceEventType.ValueSet:
                     var holder = FindGuard(e.Variable);
@@ -122,11 +136,12 @@ namespace Codebound.Core
         }
 
         // ObjectMutated text is written as "<item> added" or "<item> removed".
-        static int ItemChange(string text)
+        static void ApplyItemChange(ChestState chest, string text)
         {
-            if (text.EndsWith("added")) return 1;
-            if (text.EndsWith("removed")) return -1;
-            return 0;
+            const string added = " added";
+            const string removed = " removed";
+            if (text.EndsWith(added)) chest.Add(text.Substring(0, text.Length - added.Length));
+            else if (text.EndsWith(removed)) chest.Remove(text.Substring(0, text.Length - removed.Length));
         }
 
         GuardState FindGuard(string name)
