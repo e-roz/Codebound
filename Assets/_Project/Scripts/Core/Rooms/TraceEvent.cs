@@ -16,7 +16,9 @@ namespace Codebound.Core
         ListCopied,
         ItemReplaced,
         FieldSet,
-        ScopeEnded
+        ScopeEnded,
+        BoolSet,
+        Evaluated
     }
 
     public sealed class TraceEvent
@@ -88,6 +90,14 @@ namespace Codebound.Core
         // A variable goes away, for example a method parameter when the method returns.
         public static TraceEvent ScopeEnded(int line, string variable) =>
             new TraceEvent(TraceEventType.ScopeEnded, line, variable, NoObject, null);
+
+        // A bool variable is declared or changed (a gate rule input or result).
+        public static TraceEvent BoolSet(int line, string variable, bool value) =>
+            new TraceEvent(TraceEventType.BoolSet, line, variable, NoObject, null, value ? 1 : 0);
+
+        // One step of a rule is worked out, for example "guest && pass" gives false.
+        public static TraceEvent Evaluated(int line, string expression, bool result) =>
+            new TraceEvent(TraceEventType.Evaluated, line, null, NoObject, expression, result ? 1 : 0);
 
         public static TraceEvent FieldSet(int line, int itemId, string field, int value) =>
             new TraceEvent(TraceEventType.FieldSet, line, field, itemId, null, value);

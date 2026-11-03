@@ -19,6 +19,7 @@ namespace Codebound.UI
         [SerializeField] Image[] _chestImages;
         [SerializeField] TMP_Text[] _chestLabels;
         [SerializeField] GameObject[] _chestSwords;
+        [SerializeField] TMP_Text[] _gateRows;
         [SerializeField] TMP_Text _captionText;
         [SerializeField] TMP_Text _outputText;
         [SerializeField] float _guardHalfHeight = 90f;
@@ -66,10 +67,30 @@ namespace Codebound.UI
                 _chestSwords[j].SetActive(false);
             }
 
+            RenderGateRows(state);
+
             _captionText.text = state.Caption;
             _outputText.color = state.Error.Length > 0 ? ErrorColor : Color.white;
             _outputText.text = state.Error.Length > 0 ? state.Error
                 : state.Output.Length > 0 ? $"Output: {state.Output}" : string.Empty;
+        }
+
+        // Bool variables, then the evaluation steps. The newest line is highlighted.
+        void RenderGateRows(KeepState state)
+        {
+            if (_gateRows == null) return;
+
+            var lines = state.BoolVariables.Count + state.Steps.Count > 0 ? state.WatchLines() : null;
+            var count = lines == null ? 0 : lines.Count;
+            for (var i = 0; i < _gateRows.Length; i++)
+            {
+                var used = i < count;
+                _gateRows[i].gameObject.SetActive(used);
+                if (!used) continue;
+
+                _gateRows[i].text = lines[i];
+                _gateRows[i].color = i == count - 1 ? FlashColor : Color.white;
+            }
         }
 
         public void Flash(int chestIndex)

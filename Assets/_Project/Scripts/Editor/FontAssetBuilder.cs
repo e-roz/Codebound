@@ -20,8 +20,38 @@ namespace Codebound.EditorTools
         {
             Ensure(FontsFolder + "/Silkscreen-Regular.ttf", UiFontAssetPath);
             Ensure(FontsFolder + "/JetBrainsMono-Regular.ttf", CodeFontAssetPath);
+            UseCodeFontForAmpersand();
             SetTmpDefault(AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(UiFontAssetPath));
             AssetDatabase.SaveAssets();
+        }
+
+        // Silkscreen draws & like "¢", which hides the && in the Chapter 2 rooms.
+        // Drop its glyph and fall back to the code font, which draws it properly.
+        static void UseCodeFontForAmpersand()
+        {
+            var ui = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(UiFontAssetPath);
+            var code = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(CodeFontAssetPath);
+            if (ui == null || code == null) return;
+
+            var changed = false;
+            if (!ui.fallbackFontAssetTable.Contains(code))
+            {
+                ui.fallbackFontAssetTable.Add(code);
+                changed = true;
+            }
+
+            if (ui.characterTable.RemoveAll(c => c.unicode == '&') > 0) changed = true;
+
+            // Dynamic mode would put the glyph straight back from the font file.
+            if (ui.atlasPopulationMode != AtlasPopulationMode.Static)
+            {
+                ui.atlasPopulationMode = AtlasPopulationMode.Static;
+                changed = true;
+            }
+
+            if (!changed) return;
+            ui.ReadFontAssetDefinition();
+            EditorUtility.SetDirty(ui);
         }
 
         public static TMP_FontAsset LoadUiFont()

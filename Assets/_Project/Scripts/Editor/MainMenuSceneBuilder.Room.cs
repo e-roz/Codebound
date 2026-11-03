@@ -86,6 +86,15 @@ namespace Codebound.EditorTools
                 chestSwords[j] = CreateIcon(chestRoots[j], "Sword", sword, new Vector2(70, 70), 90).gameObject;
             }
 
+            // Gate rows (Chapter 2): bool variables and evaluation steps as text.
+            var gateRows = new TextMeshProUGUI[6];
+            for (var g = 0; g < gateRows.Length; g++)
+            {
+                gateRows[g] = CreateText(canvas, $"GateRow{g + 1}", string.Empty, 36, new Vector2(-430, 340 - 62 * g), new Vector2(900, 54));
+                // The pixel UI font draws && badly, so rules are shown in the code font.
+                UseFont(gateRows[g], codeFont);
+            }
+
             var caption = CreateText(canvas, "CaptionText", string.Empty, 30, new Vector2(-430, -215), new Vector2(940, 70), HintColor);
             var output = CreateText(canvas, "OutputText", string.Empty, 34, new Vector2(-430, -275), new Vector2(940, 50));
 
@@ -99,6 +108,7 @@ namespace Codebound.EditorTools
             AssignArray(keepSo, "_chestImages", chestImages);
             AssignArray(keepSo, "_chestLabels", chestLabels);
             AssignArray(keepSo, "_chestSwords", chestSwords);
+            AssignArray(keepSo, "_gateRows", gateRows);
             Assign(keepSo, "_captionText", caption);
             Assign(keepSo, "_outputText", output);
             keepSo.ApplyModifiedPropertiesWithoutUndo();

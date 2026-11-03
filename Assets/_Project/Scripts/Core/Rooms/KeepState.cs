@@ -54,6 +54,32 @@ namespace Codebound.Core
         }
     }
 
+    // A bool variable with its current value.
+    public sealed class BoolVariableState
+    {
+        public BoolVariableState(string name, bool value)
+        {
+            Name = name;
+            Value = value;
+        }
+
+        public string Name { get; }
+        public bool Value { get; internal set; }
+    }
+
+    // One worked-out step of a rule, such as "guest && pass" giving false.
+    public sealed class EvaluationStep
+    {
+        public EvaluationStep(string expression, bool result)
+        {
+            Expression = expression;
+            Result = result;
+        }
+
+        public string Expression { get; }
+        public bool Result { get; }
+    }
+
     // An object held inside a list, with one number field.
     public sealed class ItemObjectState
     {
@@ -79,9 +105,13 @@ namespace Codebound.Core
         readonly List<GuardState> _guards = new List<GuardState>();
         readonly List<ChestState> _chests = new List<ChestState>();
         readonly List<ItemObjectState> _itemObjects = new List<ItemObjectState>();
+        readonly List<BoolVariableState> _boolVariables = new List<BoolVariableState>();
+        readonly List<EvaluationStep> _steps = new List<EvaluationStep>();
 
         public IReadOnlyList<GuardState> Guards => _guards;
         public IReadOnlyList<ChestState> Chests => _chests;
+        public IReadOnlyList<BoolVariableState> BoolVariables => _boolVariables;
+        public IReadOnlyList<EvaluationStep> Steps => _steps;
         public int CurrentLine { get; private set; }
         public string Output { get; private set; } = string.Empty;
         public string Error { get; private set; } = string.Empty;
@@ -129,14 +159,22 @@ namespace Codebound.Core
                 if (holders.Count > 0)
                     lines.Add($"{item.TypeName.ToLowerInvariant()} #{item.Id}: {item.Field} {item.Value} (in {string.Join(" and ", holders)})");
             }
+            foreach (var variable in _boolVariables)
+                lines.Add($"{variable.Name} = {Word(variable.Value)}");
+            for (var i = 0; i < _steps.Count; i++)
+                lines.Add($"step {i + 1}: {_steps[i].Expression} = {Word(_steps[i].Result)}");
             return lines;
         }
+
+        static string Word(bool value) => value ? "true" : "false";
 
         public void Clear()
         {
             _guards.Clear();
             _chests.Clear();
             _itemObjects.Clear();
+            _boolVariables.Clear();
+            _steps.Clear();
             CurrentLine = 0;
             Output = string.Empty;
             Error = string.Empty;
@@ -217,6 +255,16 @@ namespace Codebound.Core
                     _guards.Remove(FindGuard(e.Variable));
                     Caption = $"{e.Variable} goes away. The method has ended.";
                     break;
+                case TraceEventType.BoolSet:
+                    var flag = FindBool(e.Variable);
+                    if (flag == null) _boolVariables.Add(new BoolVariableState(e.Variable, e.Value != 0));
+                    else flag.Value = e.Value != 0;
+                    Caption = $"{e.Variable} is {Word(e.Value != 0)}.";
+                    break;
+                case TraceEventType.Evaluated:
+                    _steps.Add(new EvaluationStep(e.Text, e.Value != 0));
+                    Caption = $"{e.Text} gives {Word(e.Value != 0)}.";
+                    break;
                 case TraceEventType.Output:
                     Output = e.Text;
                     Caption = $"The program prints {e.Text}.";
@@ -235,6 +283,13 @@ namespace Codebound.Core
             const string removed = " removed";
             if (text.EndsWith(added)) chest.Add(text.Substring(0, text.Length - added.Length));
             else if (text.EndsWith(removed)) chest.Remove(text.Substring(0, text.Length - removed.Length));
+        }
+
+        BoolVariableState FindBool(string name)
+        {
+            foreach (var variable in _boolVariables)
+                if (variable.Name == name) return variable;
+            return null;
         }
 
         ItemObjectState FindItemObject(int id)
