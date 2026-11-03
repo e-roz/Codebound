@@ -65,6 +65,10 @@ MonoBehaviour:
       title: The Split Treasure
       roomType: Bug hunt
       concept: Integer division and zero
+    - id: 2-6
+      title: The Visitor Form
+      roomType: Code review
+      concept: Parse vs TryParse
   - id: workshop
     name: The Workshop
     isSealed: 1

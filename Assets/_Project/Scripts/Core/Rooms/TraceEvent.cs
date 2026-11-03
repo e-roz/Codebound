@@ -21,7 +21,8 @@ namespace Codebound.Core
         Evaluated,
         IntSet,
         ArraySet,
-        OutputAppended
+        OutputAppended,
+        TextSet
     }
 
     public sealed class TraceEvent
@@ -111,6 +112,10 @@ namespace Codebound.Core
             new TraceEvent(TraceEventType.ArraySet, line, variable, NoObject, contents);
 
         // One more printed item. The output keeps all of them, separated by commas.
+        // A variable shown as text, such as a decimal (3.5) that IntSet cannot hold.
+        public static TraceEvent TextSet(int line, string variable, string text) =>
+            new TraceEvent(TraceEventType.TextSet, line, variable, NoObject, text);
+
         public static TraceEvent OutputAppended(int line, string text) =>
             new TraceEvent(TraceEventType.OutputAppended, line, null, NoObject, text);
 

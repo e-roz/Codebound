@@ -146,7 +146,7 @@ namespace Codebound.Tests
             };
 
             Assert.AreEqual(5, UnlockRules.TotalStars(_chapters, progress));
-            Assert.AreEqual(33, UnlockRules.MaxStars(_chapters));
+            Assert.AreEqual(36, UnlockRules.MaxStars(_chapters));
             Assert.AreEqual(2, UnlockRules.CompletedRooms(_chapters, progress));
         }
 
@@ -166,7 +166,7 @@ namespace Codebound.Tests
         [Test]
         public void TryFindNextRoom_ReturnsFalseWhenEverythingPlayableIsDone()
         {
-            var all = Done("1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "2-1", "2-2", "2-3", "2-4", "2-5");
+            var all = Done("1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "2-1", "2-2", "2-3", "2-4", "2-5", "2-6");
 
             Assert.IsFalse(UnlockRules.TryFindNextRoom(_chapters, all, out _, out _));
         }

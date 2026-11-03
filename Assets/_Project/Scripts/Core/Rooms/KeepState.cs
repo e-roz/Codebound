@@ -315,6 +315,12 @@ namespace Codebound.Core
                     else array.Contents = e.Text;
                     Caption = $"{e.Variable} holds {e.Text}.";
                     break;
+                case TraceEventType.TextSet:
+                    var text = FindArray(e.Variable);
+                    if (text == null) _arrayVariables.Add(new ArrayVariableState(e.Variable, e.Text));
+                    else text.Contents = e.Text;
+                    Caption = $"{e.Variable} is {e.Text}.";
+                    break;
                 case TraceEventType.OutputAppended:
                     Output = Output.Length == 0 ? e.Text : $"{Output}, {e.Text}";
                     Caption = $"The program prints {e.Text}.";
