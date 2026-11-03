@@ -34,7 +34,8 @@ namespace Codebound.UI
                 if (!used) continue;
 
                 var guard = state.Guards[i];
-                _guardLabels[i].text = guard.IsNull ? $"{guard.Name} = null" : guard.Name;
+                _guardLabels[i].text = guard.Value.HasValue ? $"{guard.Name} = {guard.Value.Value}"
+                    : guard.IsNull ? $"{guard.Name} = null" : guard.Name;
 
                 var chestIndex = state.ChestIndex(guard.ObjectId);
                 if (!guard.IsNull && chestIndex >= 0 && chestIndex < _chestRoots.Length)

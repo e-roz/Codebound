@@ -9,6 +9,7 @@ namespace Codebound.Core
         public string Name { get; }
         public int ObjectId { get; internal set; }
         public bool IsNull { get; internal set; }
+        public int? Value { get; internal set; }
     }
 
     public sealed class ChestState
@@ -48,7 +49,8 @@ namespace Codebound.Core
         {
             var lines = new List<string>();
             foreach (var guard in _guards)
-                lines.Add(guard.IsNull ? $"{guard.Name} -> null"
+                lines.Add(guard.Value.HasValue ? $"{guard.Name} = {guard.Value.Value}"
+                    : guard.IsNull ? $"{guard.Name} -> null"
                     : guard.ObjectId != TraceEvent.NoObject ? $"{guard.Name} -> chest #{guard.ObjectId}"
                     : $"{guard.Name} -> (nothing yet)");
             return lines;
@@ -102,6 +104,11 @@ namespace Codebound.Core
                     var index = ChestIndex(e.ObjectId);
                     if (index >= 0) _chests[index].ItemCount += ItemChange(e.Text);
                     Caption = $"Chest #{e.ObjectId}: {e.Text}.";
+                    break;
+                case TraceEventType.ValueSet:
+                    var holder = FindGuard(e.Variable);
+                    if (holder != null) holder.Value = e.Value;
+                    Caption = $"{e.Variable} now holds {e.Value}.";
                     break;
                 case TraceEventType.Output:
                     Output = e.Text;

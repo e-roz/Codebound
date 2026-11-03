@@ -9,15 +9,17 @@ namespace Codebound.Core
         ObjectMutated,
         NullAssigned,
         Output,
-        ExceptionThrown
+        ExceptionThrown,
+        ValueSet
     }
 
     public sealed class TraceEvent
     {
         public const int NoObject = 0;
 
-        TraceEvent(TraceEventType type, int line, string variable, int objectId, string text)
+        TraceEvent(TraceEventType type, int line, string variable, int objectId, string text, int value = 0)
         {
+            Value = value;
             Type = type;
             Line = line;
             Variable = variable ?? string.Empty;
@@ -30,6 +32,10 @@ namespace Codebound.Core
         public string Variable { get; }
         public int ObjectId { get; }
         public string Text { get; }
+        public int Value { get; }
+
+        public static TraceEvent ValueSet(int line, string variable, int value) =>
+            new TraceEvent(TraceEventType.ValueSet, line, variable, NoObject, null, value);
 
         public static TraceEvent LineExecuted(int line) =>
             new TraceEvent(TraceEventType.LineExecuted, line, null, NoObject, null);

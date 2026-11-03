@@ -58,6 +58,7 @@ namespace Codebound.UI
             _codePanel.SetCode(room.CodeLines);
             _chestClassText.text = room.SupportCode;
             _chestClassBox.SetActive(false);
+            _chestClassButton.gameObject.SetActive(room.HasSupportCode);
 
             _runButton.onClick.AddListener(OnRun);
             _stepButton.onClick.AddListener(() => { if (!IsRunning) _player.Step(); });

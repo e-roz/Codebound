@@ -75,8 +75,12 @@ namespace Codebound.Core
         public RoomDefinition(string id, string title, string ticket, string goal, IReadOnlyList<string> codeLines,
             string supportCode, IReadOnlyList<TraceEvent> trace, PredictQuestion predict,
             IReadOnlyList<Hypothesis> hypotheses, IReadOnlyList<FixOption> fixes, string testCode,
-            IReadOnlyList<string> hints, string debrief)
+            IReadOnlyList<string> hints, string debrief,
+            string investigatePrompt = "Investigate: which chest does each guard point to?",
+            string hypothesisPrompt = "Why does Vault B have a sword?")
         {
+            InvestigatePrompt = investigatePrompt;
+            HypothesisPrompt = hypothesisPrompt;
             Id = id;
             Title = title;
             Ticket = ticket;
@@ -105,5 +109,8 @@ namespace Codebound.Core
         public string TestCode { get; }
         public IReadOnlyList<string> Hints { get; }
         public string Debrief { get; }
+        public string InvestigatePrompt { get; }
+        public string HypothesisPrompt { get; }
+        public bool HasSupportCode => !string.IsNullOrEmpty(SupportCode);
     }
 }

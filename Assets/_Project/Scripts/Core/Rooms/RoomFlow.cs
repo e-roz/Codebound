@@ -168,14 +168,14 @@ namespace Codebound.Core
                 case RoomStep.Investigate:
                     var lines = _state.WatchLines();
                     screen.CanReplay = true;
-                    screen.Prompt = "Investigate: which chest does each guard point to?";
+                    screen.Prompt = room.InvestigatePrompt;
                     screen.Body = lines.Count == 0
                         ? "Step through the code to fill the watch list."
                         : "WATCH\n" + string.Join("\n", lines);
                     Next(screen, "I found the cause", true);
                     break;
                 case RoomStep.Hypothesis:
-                    screen.Prompt = "Why does Vault B have a sword?";
+                    screen.Prompt = room.HypothesisPrompt;
                     screen.Options = Texts(room.Hypotheses.Count, i => room.Hypotheses[i].Text);
                     screen.OptionMarks = MarksFor(RoomStep.Hypothesis, room.Hypotheses.Count);
                     break;
