@@ -70,17 +70,24 @@ namespace Codebound.UI
             RenderGateRows(state);
 
             _captionText.text = state.Caption;
-            _outputText.color = state.Error.Length > 0 ? ErrorColor : Color.white;
-            _outputText.text = state.Error.Length > 0 ? state.Error
+            _outputText.color = Color.white;
+            _outputText.text = state.Error.Length > 0 ? ErrorLine(state)
                 : state.Output.Length > 0 ? $"Output: {state.Output}" : string.Empty;
         }
 
-        // Bool variables, then the evaluation steps. The newest line is highlighted.
+        // A crash in red. When the program printed something first, that stays visible above it.
+        static string ErrorLine(KeepState state)
+        {
+            var error = $"<color=#{ColorUtility.ToHtmlStringRGB(ErrorColor)}>{state.Error}</color>";
+            return state.Output.Length > 0 ? $"Output: {state.Output}\n{error}" : error;
+        }
+
+        // Variables, then the evaluation steps. The newest line is highlighted.
         void RenderGateRows(KeepState state)
         {
             if (_gateRows == null) return;
 
-            var lines = state.BoolVariables.Count + state.Steps.Count > 0 ? state.WatchLines() : null;
+            var lines = state.HasRows ? state.WatchLines() : null;
             var count = lines == null ? 0 : lines.Count;
             for (var i = 0; i < _gateRows.Length; i++)
             {

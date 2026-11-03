@@ -18,7 +18,10 @@ namespace Codebound.Core
         FieldSet,
         ScopeEnded,
         BoolSet,
-        Evaluated
+        Evaluated,
+        IntSet,
+        ArraySet,
+        OutputAppended
     }
 
     public sealed class TraceEvent
@@ -98,6 +101,18 @@ namespace Codebound.Core
         // One step of a rule is worked out, for example "guest && pass" gives false.
         public static TraceEvent Evaluated(int line, string expression, bool result) =>
             new TraceEvent(TraceEventType.Evaluated, line, null, NoObject, expression, result ? 1 : 0);
+
+        // A number variable is declared or changed (a loop counter).
+        public static TraceEvent IntSet(int line, string variable, int value) =>
+            new TraceEvent(TraceEventType.IntSet, line, variable, NoObject, null, value);
+
+        // An array variable with its contents shown as text, for example "[Ana, Ben, Cy]".
+        public static TraceEvent ArraySet(int line, string variable, string contents) =>
+            new TraceEvent(TraceEventType.ArraySet, line, variable, NoObject, contents);
+
+        // One more printed item. The output keeps all of them, separated by commas.
+        public static TraceEvent OutputAppended(int line, string text) =>
+            new TraceEvent(TraceEventType.OutputAppended, line, null, NoObject, text);
 
         public static TraceEvent FieldSet(int line, int itemId, string field, int value) =>
             new TraceEvent(TraceEventType.FieldSet, line, field, itemId, null, value);

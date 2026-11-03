@@ -67,6 +67,32 @@ namespace Codebound.Core
         public bool Value { get; internal set; }
     }
 
+    // A number variable such as a loop counter.
+    public sealed class NumberVariableState
+    {
+        public NumberVariableState(string name, int value)
+        {
+            Name = name;
+            Value = value;
+        }
+
+        public string Name { get; }
+        public int Value { get; internal set; }
+    }
+
+    // An array variable, shown as text such as "[Ana, Ben, Cy] (slots 0 to 2)".
+    public sealed class ArrayVariableState
+    {
+        public ArrayVariableState(string name, string contents)
+        {
+            Name = name;
+            Contents = contents;
+        }
+
+        public string Name { get; }
+        public string Contents { get; internal set; }
+    }
+
     // One worked-out step of a rule, such as "guest && pass" giving false.
     public sealed class EvaluationStep
     {
@@ -107,11 +133,17 @@ namespace Codebound.Core
         readonly List<ItemObjectState> _itemObjects = new List<ItemObjectState>();
         readonly List<BoolVariableState> _boolVariables = new List<BoolVariableState>();
         readonly List<EvaluationStep> _steps = new List<EvaluationStep>();
+        readonly List<NumberVariableState> _numberVariables = new List<NumberVariableState>();
+        readonly List<ArrayVariableState> _arrayVariables = new List<ArrayVariableState>();
 
         public IReadOnlyList<GuardState> Guards => _guards;
         public IReadOnlyList<ChestState> Chests => _chests;
         public IReadOnlyList<BoolVariableState> BoolVariables => _boolVariables;
         public IReadOnlyList<EvaluationStep> Steps => _steps;
+        public IReadOnlyList<NumberVariableState> NumberVariables => _numberVariables;
+        public IReadOnlyList<ArrayVariableState> ArrayVariables => _arrayVariables;
+        // True when the Keep shows text rows (rooms about rules and loops) instead of guards and chests.
+        public bool HasRows => _boolVariables.Count + _numberVariables.Count + _arrayVariables.Count + _steps.Count > 0;
         public int CurrentLine { get; private set; }
         public string Output { get; private set; } = string.Empty;
         public string Error { get; private set; } = string.Empty;
@@ -161,6 +193,10 @@ namespace Codebound.Core
             }
             foreach (var variable in _boolVariables)
                 lines.Add($"{variable.Name} = {Word(variable.Value)}");
+            foreach (var array in _arrayVariables)
+                lines.Add($"{array.Name} = {array.Contents}");
+            foreach (var number in _numberVariables)
+                lines.Add($"{number.Name} = {number.Value}");
             for (var i = 0; i < _steps.Count; i++)
                 lines.Add($"step {i + 1}: {_steps[i].Expression} = {Word(_steps[i].Result)}");
             return lines;
@@ -175,6 +211,8 @@ namespace Codebound.Core
             _itemObjects.Clear();
             _boolVariables.Clear();
             _steps.Clear();
+            _numberVariables.Clear();
+            _arrayVariables.Clear();
             CurrentLine = 0;
             Output = string.Empty;
             Error = string.Empty;
@@ -265,6 +303,22 @@ namespace Codebound.Core
                     _steps.Add(new EvaluationStep(e.Text, e.Value != 0));
                     Caption = $"{e.Text} gives {Word(e.Value != 0)}.";
                     break;
+                case TraceEventType.IntSet:
+                    var number = FindNumber(e.Variable);
+                    if (number == null) _numberVariables.Add(new NumberVariableState(e.Variable, e.Value));
+                    else number.Value = e.Value;
+                    Caption = $"{e.Variable} is {e.Value}.";
+                    break;
+                case TraceEventType.ArraySet:
+                    var array = FindArray(e.Variable);
+                    if (array == null) _arrayVariables.Add(new ArrayVariableState(e.Variable, e.Text));
+                    else array.Contents = e.Text;
+                    Caption = $"{e.Variable} holds {e.Text}.";
+                    break;
+                case TraceEventType.OutputAppended:
+                    Output = Output.Length == 0 ? e.Text : $"{Output}, {e.Text}";
+                    Caption = $"The program prints {e.Text}.";
+                    break;
                 case TraceEventType.Output:
                     Output = e.Text;
                     Caption = $"The program prints {e.Text}.";
@@ -283,6 +337,20 @@ namespace Codebound.Core
             const string removed = " removed";
             if (text.EndsWith(added)) chest.Add(text.Substring(0, text.Length - added.Length));
             else if (text.EndsWith(removed)) chest.Remove(text.Substring(0, text.Length - removed.Length));
+        }
+
+        NumberVariableState FindNumber(string name)
+        {
+            foreach (var variable in _numberVariables)
+                if (variable.Name == name) return variable;
+            return null;
+        }
+
+        ArrayVariableState FindArray(string name)
+        {
+            foreach (var variable in _arrayVariables)
+                if (variable.Name == name) return variable;
+            return null;
         }
 
         BoolVariableState FindBool(string name)
