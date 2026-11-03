@@ -53,6 +53,10 @@ MonoBehaviour:
       title: The Last Guard
       roomType: Bug hunt
       concept: Off-by-one errors
+    - id: 2-3
+      title: The Gate That Never Closes
+      roomType: Trace
+      concept: Loops that never end
     - id: 2-4
       title: The Toll Boundary
       roomType: Repair
