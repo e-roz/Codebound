@@ -71,8 +71,20 @@ MonoBehaviour:
       concept: Parse vs TryParse
   - id: workshop
     name: The Workshop
-    isSealed: 1
-    rooms: []
+    isSealed: 0
+    rooms:
+    - id: 3-1
+      title: The Healer Machine
+      roomType: Predict
+      concept: Return values
+    - id: 3-2
+      title: The Greedy Counter
+      roomType: Bug hunt
+      concept: Side effects
+    - id: 3-3
+      title: The Stack of Clues
+      roomType: Trace
+      concept: Reading a stack trace
   - id: archive
     name: The Archive
     isSealed: 1

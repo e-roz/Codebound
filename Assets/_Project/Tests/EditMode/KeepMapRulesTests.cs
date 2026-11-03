@@ -51,7 +51,8 @@ namespace Codebound.Tests
 
             Assert.AreEqual("1 / 6 rooms", KeepMapRules.WingStatus(_chapters, 0, progress));
             Assert.AreEqual("Locked: finish The Vaults", KeepMapRules.WingStatus(_chapters, 1, progress));
-            Assert.AreEqual("Sealed, coming soon", KeepMapRules.WingStatus(_chapters, 2, progress));
+            Assert.AreEqual("Locked: finish The Gates", KeepMapRules.WingStatus(_chapters, 2, progress));
+            Assert.AreEqual("Sealed, coming soon", KeepMapRules.WingStatus(_chapters, 3, progress));
         }
 
         [Test]

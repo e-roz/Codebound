@@ -14,7 +14,7 @@ namespace Codebound.EditorTools
     {
         const string RoomScenePath = ScenesFolder + "/Room.unity";
         const string TilesFolder = ArtFolder + "/Tiles/Dungeon";
-        const int CodeRows = 5;
+        const int CodeRows = 8;
 
         static readonly Color ThreadColor = new Color(0.95f, 0.8f, 0.45f);
 

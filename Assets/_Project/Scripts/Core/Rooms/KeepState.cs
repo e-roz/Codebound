@@ -133,6 +133,7 @@ namespace Codebound.Core
         readonly List<ItemObjectState> _itemObjects = new List<ItemObjectState>();
         readonly List<BoolVariableState> _boolVariables = new List<BoolVariableState>();
         readonly List<EvaluationStep> _steps = new List<EvaluationStep>();
+        readonly List<string> _calls = new List<string>();
         readonly List<NumberVariableState> _numberVariables = new List<NumberVariableState>();
         readonly List<ArrayVariableState> _arrayVariables = new List<ArrayVariableState>();
 
@@ -140,10 +141,11 @@ namespace Codebound.Core
         public IReadOnlyList<ChestState> Chests => _chests;
         public IReadOnlyList<BoolVariableState> BoolVariables => _boolVariables;
         public IReadOnlyList<EvaluationStep> Steps => _steps;
+        public IReadOnlyList<string> Calls => _calls;
         public IReadOnlyList<NumberVariableState> NumberVariables => _numberVariables;
         public IReadOnlyList<ArrayVariableState> ArrayVariables => _arrayVariables;
         // True when the Keep shows text rows (rooms about rules and loops) instead of guards and chests.
-        public bool HasRows => _boolVariables.Count + _numberVariables.Count + _arrayVariables.Count + _steps.Count > 0;
+        public bool HasRows => _boolVariables.Count + _numberVariables.Count + _arrayVariables.Count + _steps.Count + _calls.Count > 0;
         public int CurrentLine { get; private set; }
         public string Output { get; private set; } = string.Empty;
         public string Error { get; private set; } = string.Empty;
@@ -199,6 +201,7 @@ namespace Codebound.Core
                 lines.Add($"{number.Name} = {number.Value}");
             for (var i = 0; i < _steps.Count; i++)
                 lines.Add($"step {i + 1}: {_steps[i].Expression} = {Word(_steps[i].Result)}");
+            lines.AddRange(_calls);
             return lines;
         }
 
@@ -211,6 +214,7 @@ namespace Codebound.Core
             _itemObjects.Clear();
             _boolVariables.Clear();
             _steps.Clear();
+            _calls.Clear();
             _numberVariables.Clear();
             _arrayVariables.Clear();
             CurrentLine = 0;
@@ -314,6 +318,10 @@ namespace Codebound.Core
                     if (array == null) _arrayVariables.Add(new ArrayVariableState(e.Variable, e.Text));
                     else array.Contents = e.Text;
                     Caption = $"{e.Variable} holds {e.Text}.";
+                    break;
+                case TraceEventType.CallReturned:
+                    _calls.Add($"{e.Variable} returns {e.Text}");
+                    Caption = $"{e.Variable} returns {e.Text}.";
                     break;
                 case TraceEventType.TextSet:
                     var text = FindArray(e.Variable);

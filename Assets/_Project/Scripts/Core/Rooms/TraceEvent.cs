@@ -22,7 +22,8 @@ namespace Codebound.Core
         IntSet,
         ArraySet,
         OutputAppended,
-        TextSet
+        TextSet,
+        CallReturned
     }
 
     public sealed class TraceEvent
@@ -115,6 +116,10 @@ namespace Codebound.Core
         // A variable shown as text, such as a decimal (3.5) that IntSet cannot hold.
         public static TraceEvent TextSet(int line, string variable, string text) =>
             new TraceEvent(TraceEventType.TextSet, line, variable, NoObject, text);
+
+        // A method call and the value it hands back, such as Heal(50) returning 70.
+        public static TraceEvent CallReturned(int line, string call, string result) =>
+            new TraceEvent(TraceEventType.CallReturned, line, call, NoObject, result);
 
         public static TraceEvent OutputAppended(int line, string text) =>
             new TraceEvent(TraceEventType.OutputAppended, line, null, NoObject, text);
