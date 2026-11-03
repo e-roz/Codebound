@@ -23,12 +23,54 @@ namespace Codebound.Core
         public int Id { get; }
         public string TypeName { get; }
         readonly List<string> _items = new List<string>();
+        readonly List<int> _itemObjects = new List<int>();
 
+        // Plain items such as "Sword" (rooms 1.1 to 1.3).
         public IReadOnlyList<string> Items => _items;
-        public int ItemCount => _items.Count;
+        // Ids of item objects held by reference (room 1.4).
+        public IReadOnlyList<int> ItemObjects => _itemObjects;
+        public int ItemCount => _items.Count + _itemObjects.Count;
 
         internal void Add(string item) => _items.Add(item);
         internal void Remove(string item) => _items.Remove(item);
+        public bool HoldsObject(int itemId)
+        {
+            foreach (var id in _itemObjects)
+                if (id == itemId) return true;
+            return false;
+        }
+
+        internal void AddObject(int itemId) => _itemObjects.Add(itemId);
+
+        internal void ReplaceObject(int index, int itemId)
+        {
+            if (index >= 0 && index < _itemObjects.Count) _itemObjects[index] = itemId;
+        }
+
+        internal void CopyFrom(ChestState source)
+        {
+            _items.AddRange(source._items);
+            _itemObjects.AddRange(source._itemObjects);
+        }
+    }
+
+    // An object held inside a list, with one number field.
+    public sealed class ItemObjectState
+    {
+        public ItemObjectState(int id, string typeName, string field, int value)
+        {
+            Id = id;
+            TypeName = typeName;
+            Field = field;
+            Value = value;
+        }
+
+        public int Id { get; }
+        public string TypeName { get; }
+        public string Field { get; }
+        public int Value { get; internal set; }
+
+        public string Describe() => $"{TypeName} #{Id} ({Field} {Value})";
     }
 
     // What the Keep looks like after the trace events played so far. The view only draws this.
@@ -36,6 +78,7 @@ namespace Codebound.Core
     {
         readonly List<GuardState> _guards = new List<GuardState>();
         readonly List<ChestState> _chests = new List<ChestState>();
+        readonly List<ItemObjectState> _itemObjects = new List<ItemObjectState>();
 
         public IReadOnlyList<GuardState> Guards => _guards;
         public IReadOnlyList<ChestState> Chests => _chests;
@@ -49,6 +92,17 @@ namespace Codebound.Core
             for (var i = 0; i < _chests.Count; i++)
                 if (_chests[i].Id == objectId) return i;
             return -1;
+        }
+
+        public IReadOnlyList<string> DescribeItems(ChestState chest)
+        {
+            var items = new List<string>(chest.Items);
+            foreach (var id in chest.ItemObjects)
+            {
+                var item = FindItemObject(id);
+                if (item != null) items.Add(item.Describe());
+            }
+            return items;
         }
 
         string TypeName(int objectId)
@@ -67,6 +121,14 @@ namespace Codebound.Core
                     : guard.IsNull ? $"{guard.Name} -> null"
                     : guard.ObjectId != TraceEvent.NoObject ? $"{guard.Name} -> {Noun(guard.ObjectId)} #{guard.ObjectId}"
                     : $"{guard.Name} -> (nothing yet)");
+            foreach (var item in _itemObjects)
+            {
+                var holders = new List<string>();
+                foreach (var chest in _chests)
+                    if (chest.HoldsObject(item.Id)) holders.Add($"list #{chest.Id}");
+                if (holders.Count > 0)
+                    lines.Add($"{item.TypeName.ToLowerInvariant()} #{item.Id}: {item.Field} {item.Value} (in {string.Join(" and ", holders)})");
+            }
             return lines;
         }
 
@@ -74,6 +136,7 @@ namespace Codebound.Core
         {
             _guards.Clear();
             _chests.Clear();
+            _itemObjects.Clear();
             CurrentLine = 0;
             Output = string.Empty;
             Error = string.Empty;
@@ -124,6 +187,32 @@ namespace Codebound.Core
                     if (holder != null) holder.Value = e.Value;
                     Caption = $"{e.Variable} now holds {e.Value}.";
                     break;
+                case TraceEventType.ItemObjectCreated:
+                    _itemObjects.Add(new ItemObjectState(e.ObjectId, e.Text, e.Variable, e.Value));
+                    Caption = $"A new {e.Text} appears (#{e.ObjectId}). {e.Variable} is {e.Value}.";
+                    break;
+                case TraceEventType.ItemAdded:
+                    var holder1 = ChestIndex(e.ObjectId);
+                    if (holder1 >= 0) _chests[holder1].AddObject(e.Other);
+                    Caption = $"{ItemName(e.Other)} goes into list #{e.ObjectId}.";
+                    break;
+                case TraceEventType.ListCopied:
+                    var source = ChestIndex(e.Other);
+                    var copy = new ChestState(e.ObjectId, e.Text);
+                    if (source >= 0) copy.CopyFrom(_chests[source]);
+                    _chests.Add(copy);
+                    Caption = $"List #{e.ObjectId} copies list #{e.Other}. It holds the same objects.";
+                    break;
+                case TraceEventType.ItemReplaced:
+                    var owner = ChestIndex(e.ObjectId);
+                    if (owner >= 0) _chests[owner].ReplaceObject(e.Value, e.Other);
+                    Caption = $"List #{e.ObjectId} now holds {ItemName(e.Other)} in slot {e.Value}.";
+                    break;
+                case TraceEventType.FieldSet:
+                    var changed = FindItemObject(e.ObjectId);
+                    if (changed != null) changed.Value = e.Value;
+                    Caption = $"{ItemName(e.ObjectId)}: {e.Variable} = {e.Value}.";
+                    break;
                 case TraceEventType.Output:
                     Output = e.Text;
                     Caption = $"The program prints {e.Text}.";
@@ -142,6 +231,19 @@ namespace Codebound.Core
             const string removed = " removed";
             if (text.EndsWith(added)) chest.Add(text.Substring(0, text.Length - added.Length));
             else if (text.EndsWith(removed)) chest.Remove(text.Substring(0, text.Length - removed.Length));
+        }
+
+        ItemObjectState FindItemObject(int id)
+        {
+            foreach (var item in _itemObjects)
+                if (item.Id == id) return item;
+            return null;
+        }
+
+        string ItemName(int id)
+        {
+            var item = FindItemObject(id);
+            return item != null ? $"{item.TypeName} #{id}" : $"Object #{id}";
         }
 
         GuardState FindGuard(string name)

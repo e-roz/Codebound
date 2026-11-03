@@ -61,7 +61,7 @@ namespace Codebound.UI
 
                 var chest = state.Chests[j];
                 _chestLabels[j].text = $"{chest.TypeName} #{chest.Id}" +
-                                       (chest.ItemCount > 0 ? $": {string.Join(", ", chest.Items)}" : string.Empty);
+                                       (chest.ItemCount > 0 ? $": {string.Join(", ", state.DescribeItems(chest))}" : string.Empty);
                 // The items are named in the label, so the generic sword icon would only mislead.
                 _chestSwords[j].SetActive(false);
             }
