@@ -15,7 +15,8 @@ namespace Codebound.Core
         ItemAdded,
         ListCopied,
         ItemReplaced,
-        FieldSet
+        FieldSet,
+        ScopeEnded
     }
 
     public sealed class TraceEvent
@@ -83,6 +84,10 @@ namespace Codebound.Core
 
         public static TraceEvent ItemReplaced(int line, int listId, int index, int newItemId) =>
             new TraceEvent(TraceEventType.ItemReplaced, line, null, listId, null, index, newItemId);
+
+        // A variable goes away, for example a method parameter when the method returns.
+        public static TraceEvent ScopeEnded(int line, string variable) =>
+            new TraceEvent(TraceEventType.ScopeEnded, line, variable, NoObject, null);
 
         public static TraceEvent FieldSet(int line, int itemId, string field, int value) =>
             new TraceEvent(TraceEventType.FieldSet, line, field, itemId, null, value);

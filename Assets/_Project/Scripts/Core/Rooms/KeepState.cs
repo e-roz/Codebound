@@ -213,6 +213,10 @@ namespace Codebound.Core
                     if (changed != null) changed.Value = e.Value;
                     Caption = $"{ItemName(e.ObjectId)}: {e.Variable} = {e.Value}.";
                     break;
+                case TraceEventType.ScopeEnded:
+                    _guards.Remove(FindGuard(e.Variable));
+                    Caption = $"{e.Variable} goes away. The method has ended.";
+                    break;
                 case TraceEventType.Output:
                     Output = e.Text;
                     Caption = $"The program prints {e.Text}.";
