@@ -229,9 +229,10 @@ namespace Codebound.Core
         {
             var guess = _session.Room.Predict.Options[_predicted];
             if (!done) return $"You predicted {guess}. Run the code to see the real answer.";
+            var result = _state.Error.Length > 0 ? $"it crashed with {_state.Error}" : $"it printed {_state.Output}";
             return _session.PredictionCorrect
-                ? $"You predicted {guess}, and it printed {_state.Output}. Nice."
-                : $"You predicted {guess}, but it printed {_state.Output}. Find out why.";
+                ? $"You predicted {guess}, and {result}. Nice."
+                : $"You predicted {guess}, but {result}. Find out why.";
         }
 
         static void Next(RoomFlowScreen screen, string label, bool enabled)

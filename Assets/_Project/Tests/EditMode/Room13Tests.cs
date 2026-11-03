@@ -24,7 +24,7 @@ namespace Codebound.Tests
             Assert.IsTrue(RoomLibrary.Has("1-3"));
             Assert.IsTrue(RoomLibrary.TryCreate("1-3", out var room));
             Assert.AreEqual("The Shared Inventory", room.Title);
-            Assert.IsFalse(RoomLibrary.Has("1-5"));
+            Assert.IsFalse(RoomLibrary.Has("1-6"));
         }
 
         [Test]
