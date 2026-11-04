@@ -30,7 +30,10 @@ namespace Codebound.Core
                     Room("3-4", "The Silent Failure", "Bug hunt", "Swallowed exceptions"),
                     Room("3-5", "Red, Then Green", "Repair", "Test first"),
                     Room("3-6", "The Forty-Line Monster", "Code review", "One method, one job")),
-                Sealed("archive", "The Archive"),
+                Chapter("archive", "The Archive",
+                    Room("4-1", "The Duplicate Scrolls", "Predict", "List vs HashSet"),
+                    Room("4-2", "The Shelf That Shrinks", "Bug hunt", "Changing a list while looping"),
+                    Room("4-3", "The Missing Key", "Trace", "Dictionary lookups")),
                 Sealed("great-hall", "The Great Hall"),
                 Sealed("towers", "The Towers"),
                 Sealed("architect", "Architect's Chamber")

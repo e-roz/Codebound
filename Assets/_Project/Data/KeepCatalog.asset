@@ -99,8 +99,20 @@ MonoBehaviour:
       concept: One method, one job
   - id: archive
     name: The Archive
-    isSealed: 1
-    rooms: []
+    isSealed: 0
+    rooms:
+    - id: 4-1
+      title: The Duplicate Scrolls
+      roomType: Predict
+      concept: List vs HashSet
+    - id: 4-2
+      title: The Shelf That Shrinks
+      roomType: Bug hunt
+      concept: Changing a list while looping
+    - id: 4-3
+      title: The Missing Key
+      roomType: Trace
+      concept: Dictionary lookups
   - id: great-hall
     name: The Great Hall
     isSealed: 1

@@ -34,14 +34,15 @@ namespace Codebound.Tests
         }
 
         [Test]
-        public void FreshGame_VaultsOpen_GatesAndWorkshopLocked_OthersSealed()
+        public void FreshGame_VaultsOpen_GatesWorkshopArchiveLocked_OthersSealed()
         {
             var progress = new List<RoomProgress>();
 
             Assert.AreEqual(WingState.Open, UnlockRules.GetWingState(_chapters, 0, progress));
             Assert.AreEqual(WingState.Locked, UnlockRules.GetWingState(_chapters, 1, progress));
             Assert.AreEqual(WingState.Locked, UnlockRules.GetWingState(_chapters, 2, progress));
-            for (var c = 3; c < _chapters.Count; c++)
+            Assert.AreEqual(WingState.Locked, UnlockRules.GetWingState(_chapters, 3, progress));
+            for (var c = 4; c < _chapters.Count; c++)
                 Assert.AreEqual(WingState.Sealed, UnlockRules.GetWingState(_chapters, c, progress));
         }
 
@@ -147,7 +148,7 @@ namespace Codebound.Tests
             };
 
             Assert.AreEqual(5, UnlockRules.TotalStars(_chapters, progress));
-            Assert.AreEqual(54, UnlockRules.MaxStars(_chapters));
+            Assert.AreEqual(63, UnlockRules.MaxStars(_chapters));
             Assert.AreEqual(2, UnlockRules.CompletedRooms(_chapters, progress));
         }
 
@@ -167,7 +168,7 @@ namespace Codebound.Tests
         [Test]
         public void TryFindNextRoom_ReturnsFalseWhenEverythingPlayableIsDone()
         {
-            var all = Done("1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "2-1", "2-2", "2-3", "2-4", "2-5", "2-6", "3-1", "3-2", "3-3", "3-4", "3-5", "3-6");
+            var all = Done("1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "2-1", "2-2", "2-3", "2-4", "2-5", "2-6", "3-1", "3-2", "3-3", "3-4", "3-5", "3-6", "4-1", "4-2", "4-3");
 
             Assert.IsFalse(UnlockRules.TryFindNextRoom(_chapters, all, out _, out _));
         }
