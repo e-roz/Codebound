@@ -111,7 +111,7 @@ namespace Codebound.Core
         public static TraceEvent IntSet(int line, string variable, int value) =>
             new TraceEvent(TraceEventType.IntSet, line, variable, NoObject, null, value);
 
-        // An array variable with its contents shown as text, for example "[Ana, Ben, Cy]".
+        // An array variable with its contents shown as text, for example "[Thea, Jean, Coco]".
         public static TraceEvent ArraySet(int line, string variable, string contents) =>
             new TraceEvent(TraceEventType.ArraySet, line, variable, NoObject, contents);
 

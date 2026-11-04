@@ -33,7 +33,10 @@ namespace Codebound.Core
                 Chapter("archive", "The Archive",
                     Room("4-1", "The Duplicate Scrolls", "Predict", "List vs HashSet"),
                     Room("4-2", "The Shelf That Shrinks", "Bug hunt", "Changing a list while looping"),
-                    Room("4-3", "The Missing Key", "Trace", "Dictionary lookups")),
+                    Room("4-3", "The Missing Key", "Trace", "Dictionary lookups"),
+                    Room("4-4", "The Case-Sensitive Index", "Bug hunt", "Case-sensitive keys"),
+                    Room("4-5", "Searching the Whole Shelf", "Repair", "Search cost: List vs HashSet"),
+                    Room("4-6", "The Right Container", "Code review", "Choosing a collection")),
                 Sealed("great-hall", "The Great Hall"),
                 Sealed("towers", "The Towers"),
                 Sealed("architect", "Architect's Chamber")

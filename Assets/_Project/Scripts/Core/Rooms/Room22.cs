@@ -6,7 +6,7 @@ namespace Codebound.Core
     {
         public const string Id = "2-2";
 
-        static readonly string[] Guards = { "Ana", "Ben", "Cy" };
+        static readonly string[] Guards = { "Thea", "Jean", "Coco" };
 
         public static RoomDefinition Create()
         {
@@ -37,7 +37,7 @@ namespace Codebound.Core
                     new FixOption("Change line 3 to: for (int i = 0; i < n; i++)", FixQuality.Best,
                         Lines("int n = g.Length;", "for (int i = 0; i < n; i++)"),
                         Roll(3, 0, false),
-                        "Test passed: Ana, Ben, Cy. No crash."),
+                        "Test passed: Thea, Jean, Coco. No crash."),
                     new FixOption("Change line 2 to: int n = 2;", FixQuality.SymptomOnly,
                         Lines("int n = 2;", "for (int i = 0; i <= n; i++)"),
                         Roll(2, 0, true),
@@ -45,9 +45,9 @@ namespace Codebound.Core
                     new FixOption("Change line 3 to: for (int i = 1; i <= n; i++)", FixQuality.Wrong,
                         Lines("int n = g.Length;", "for (int i = 1; i <= n; i++)"),
                         Roll(3, 1, true),
-                        "Test failed: Ana is skipped and it still crashes.")
+                        "Test failed: Thea is skipped and it still crashes.")
                 },
-                "Assert.AreEqual(\"Ana, Ben, Cy\", output); // and again with 4 guards",
+                "Assert.AreEqual(\"Thea, Jean, Coco\", output); // and again with 4 guards",
                 new[]
                 {
                     "What is the last slot number of g?",
@@ -56,12 +56,12 @@ namespace Codebound.Core
                 },
                 "Slots are counted from 0, so the last slot is Length - 1. Use i < Length. At work: off-by-one is why batch jobs skip or crash on the last record.",
                 "Investigate: what is the last slot of g?",
-                "Why does it crash after Cy?");
+                "Why does it crash after Coco?");
         }
 
         static string[] Lines(string line2, string line3)
         {
-            return new[] { "string[] g = {\"Ana\",\"Ben\",\"Cy\"};", line2, line3, "    Console.WriteLine(g[i]);" };
+            return new[] { "string[] g={\"Thea\",\"Jean\",\"Coco\"};", line2, line3, "    Console.WriteLine(g[i]);" };
         }
 
         // Plays the roll call. n is the loop limit, inclusive picks <= instead of <.
@@ -71,7 +71,7 @@ namespace Codebound.Core
             var events = new List<TraceEvent>
             {
                 TraceEvent.LineExecuted(1),
-                TraceEvent.ArraySet(1, "g", "[Ana, Ben, Cy] (slots 0 to 2)"),
+                TraceEvent.ArraySet(1, "g", "[Thea, Jean, Coco] (slots 0 to 2)"),
                 TraceEvent.LineExecuted(2),
                 TraceEvent.IntSet(2, "n", n)
             };

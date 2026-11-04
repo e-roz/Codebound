@@ -30,6 +30,9 @@ namespace Codebound.Core
                 case Room41.Id: room = Room41.Create(); break;
                 case Room42.Id: room = Room42.Create(); break;
                 case Room43.Id: room = Room43.Create(); break;
+                case Room44.Id: room = Room44.Create(); break;
+                case Room45.Id: room = Room45.Create(); break;
+                case Room46.Id: room = Room46.Create(); break;
                 default: room = null; break;
             }
             return room != null;

@@ -113,6 +113,18 @@ MonoBehaviour:
       title: The Missing Key
       roomType: Trace
       concept: Dictionary lookups
+    - id: 4-4
+      title: The Case-Sensitive Index
+      roomType: Bug hunt
+      concept: Case-sensitive keys
+    - id: 4-5
+      title: Searching the Whole Shelf
+      roomType: Repair
+      concept: Search cost: List vs HashSet
+    - id: 4-6
+      title: The Right Container
+      roomType: Code review
+      concept: Choosing a collection
   - id: great-hall
     name: The Great Hall
     isSealed: 1

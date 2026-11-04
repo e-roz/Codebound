@@ -57,7 +57,7 @@ namespace Codebound.Tests
         {
             var state = Play(_room.Trace);
 
-            Assert.AreEqual("Ana, Ben, Cy", state.Output);
+            Assert.AreEqual("Thea, Jean, Coco", state.Output);
             Assert.AreEqual("IndexOutOfRangeException", state.Error);
             Assert.AreEqual(3, state.NumberVariables.First(v => v.Name == "i").Value);
             Assert.AreEqual(3, state.NumberVariables.First(v => v.Name == "n").Value);
@@ -70,7 +70,7 @@ namespace Codebound.Tests
         {
             CollectionAssert.AreEqual(new[]
             {
-                "g = [Ana, Ben, Cy] (slots 0 to 2)", "n = 3", "i = 3", "step 1: 3 <= 3 = true"
+                "g = [Thea, Jean, Coco] (slots 0 to 2)", "n = 3", "i = 3", "step 1: 3 <= 3 = true"
             }, Play(_room.Trace).WatchLines().ToList());
         }
 
@@ -78,10 +78,10 @@ namespace Codebound.Tests
         public void OutputAppended_KeepsEveryPrintedItem()
         {
             var state = new KeepState();
-            state.Apply(TraceEvent.OutputAppended(4, "Ana"));
-            state.Apply(TraceEvent.OutputAppended(4, "Ben"));
+            state.Apply(TraceEvent.OutputAppended(4, "Thea"));
+            state.Apply(TraceEvent.OutputAppended(4, "Jean"));
 
-            Assert.AreEqual("Ana, Ben", state.Output);
+            Assert.AreEqual("Thea, Jean", state.Output);
             state.Clear();
             Assert.AreEqual(string.Empty, state.Output);
         }
@@ -110,7 +110,7 @@ namespace Codebound.Tests
         {
             var state = Play(_room.Fixes[0].Consequence);
 
-            Assert.AreEqual("Ana, Ben, Cy", state.Output);
+            Assert.AreEqual("Thea, Jean, Coco", state.Output);
             Assert.AreEqual(string.Empty, state.Error);
         }
 
@@ -119,7 +119,7 @@ namespace Codebound.Tests
         {
             var state = Play(_room.Fixes[1].Consequence);
 
-            Assert.AreEqual("Ana, Ben, Cy", state.Output);
+            Assert.AreEqual("Thea, Jean, Coco", state.Output);
             Assert.AreEqual(string.Empty, state.Error);
             Assert.AreEqual(2, state.NumberVariables.First(v => v.Name == "n").Value);
         }
@@ -129,7 +129,7 @@ namespace Codebound.Tests
         {
             var state = Play(_room.Fixes[2].Consequence);
 
-            Assert.AreEqual("Ben, Cy", state.Output);
+            Assert.AreEqual("Jean, Coco", state.Output);
             Assert.AreEqual("IndexOutOfRangeException", state.Error);
         }
 
@@ -145,10 +145,10 @@ namespace Codebound.Tests
             flow.Pick(1);
             session.Trace.RunToEnd();
             flow.Next();
-            StringAssert.Contains("g = [Ana, Ben, Cy]", flow.Screen.Body);
+            StringAssert.Contains("g = [Thea, Jean, Coco]", flow.Screen.Body);
             Assert.AreEqual("Investigate: what is the last slot of g?", flow.Screen.Prompt);
             flow.Next();
-            Assert.AreEqual("Why does it crash after Cy?", flow.Screen.Prompt);
+            Assert.AreEqual("Why does it crash after Coco?", flow.Screen.Prompt);
             flow.Pick(2);
             StringAssert.Contains("Call every guard once.", flow.Screen.Prompt);
             flow.Pick(0);

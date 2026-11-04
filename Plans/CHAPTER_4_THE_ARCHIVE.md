@@ -1,6 +1,6 @@
 # Plan: Chapter 4 "The Archive" (Collections)
 
-Status: **APPROVED (2026-11-04). Batch A (4.1 to 4.3) implemented, not committed. Batch B (4.4 to 4.6) not started.**
+Status: **APPROVED (2026-11-04). Batch A (4.1 to 4.3) committed. Batch B (4.4 to 4.6) implemented, not committed.**
 Workflow: brainstorm (done) → **plan (this file)** → check → [changes → check again] → code → check against this plan → test.
 All wording is a draft for you to change. Exact code, options and hints get written per batch after you approve this overview.
 
@@ -24,7 +24,7 @@ Chapters 1 to 3 are done and pushed (18 rooms, 54 stars, 308 tests). Chapter 4 i
 | 4.1 | Predict | **The Duplicate Scrolls** | `List.Add` accepts the same ID twice, so a report counts 2. Fix: `HashSet<string>` (or check `Contains` first) | `scrolls = [A1, A1]`, `Count = 2` | Duplicate customer or order records |
 | 4.2 | Bug hunt | **The Shelf That Shrinks** | `Remove` inside `foreach` throws `InvalidOperationException` (collection was modified). Fix: `RemoveAll(...)` | List rows shrinking, then an error | The classic "works on small data" crash |
 | 4.3 | Trace | **The Missing Key** | `prices["Potion"]` throws `KeyNotFoundException`. Fix: `TryGetValue` with a fallback | `prices = {Sword, Shield}`, key `Potion` not found | Config or lookup tables that miss a key |
-| 4.4 | Bug hunt | **The Case-Sensitive Index** | Key `"Ana"` is stored, the search uses `"ana"`, so nothing is found. Fix: `StringComparer.OrdinalIgnoreCase` | `users = {Ana}`, lookup `ana` finds nothing | Login by email typed in a different case |
+| 4.4 | Bug hunt | **The Case-Sensitive Index** | Key `"Thea"` is stored, the search uses `"thea"`, so nothing is found. Fix: `StringComparer.OrdinalIgnoreCase` | `users = {Thea}`, lookup `thea` finds nothing | Login by email typed in a different case |
 | 4.5 | Repair | **Searching the Whole Shelf** | `List.Contains` scans every item (`checks = 1000`). Fix: a `HashSet` (`checks = 1`). The "fine for now" note | Number row `checks`, red then small | Slow page at 100,000 records |
 | 4.6 | Code review | **The Right Container** | Pick the better container for a job (queue of orders: `Queue` vs `List` with `RemoveAt(0)`), or a unique-tags job (`HashSet` vs `List`) | Rows list the two containers and their cost | Interview question: "which collection and why?" |
 
@@ -53,3 +53,11 @@ Fix options follow the Chapter 3 pattern: **Best**, **SymptomOnly** (shorter or 
 - **4.2 The Shelf That Shrinks:** list `{1, 1, 2}`, `Remove` inside `foreach` throws; best fix `RemoveAll`. Symptom: try/catch (loop quits early, a 1 is left). Wrong: one `Remove(1)` (only the first 1 goes).
 - **4.3 The Missing Key:** `shop[key]` throws `KeyNotFoundException`. **Change from the plan:** best fix is `ContainsKey` (not `TryGetValue`), because the `TryGetValue` line is longer than 35 characters; the debrief mentions `TryGetValue`. Symptom: catch and print 0. Wrong: `shop.Count > 0`.
 - **Played in Unity:** all three rooms, all three fix paths each (best fix of each gave the pass message; 4.1 got 3 stars). 8-line layout in 4.2 looks fine.
+
+## 8. Batch B: what was built
+- **Archive wing now has 6 rooms.** Totals: 24 rooms, 72 stars, 356 tests pass. No new engine code.
+- **Inspector header (question 1): not added.** The plain rows already show the collection contents, so I skipped it (YAGNI). Easy to add later if you want it.
+- **4.4 The Case-Sensitive Index:** `thea` vs stored key `Thea`. Best fix: a dictionary created with `StringComparer.OrdinalIgnoreCase`. Symptom: hardcode `Thea`. Wrong: `.ToLower()` on the typed name.
+- **4.5 Searching the Whole Shelf:** `checks = 1000` for `List.Contains`. Best fix: `HashSet` (`checks = 1`). Symptom: `IndexOf(id) >= 0` (still 1000). Wrong: `Sort()` first (2000). The counts are simulated; the debrief says so.
+- **4.6 The Right Container:** `RemoveAt(0)` on a List shifts items (`moves = 2`). Best fix: `Queue` and `Dequeue()`. Symptom: `Remove(next)`. Wrong: `Stack` (serves C first).
+- **Played in Unity:** all three rooms, all three fix paths each.

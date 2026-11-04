@@ -80,7 +80,7 @@ namespace Codebound.Core
         public int Value { get; internal set; }
     }
 
-    // An array variable, shown as text such as "[Ana, Ben, Cy] (slots 0 to 2)".
+    // An array variable, shown as text such as "[Thea, Jean, Coco] (slots 0 to 2)".
     public sealed class ArrayVariableState
     {
         public ArrayVariableState(string name, string contents)
