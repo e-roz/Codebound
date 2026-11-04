@@ -55,7 +55,7 @@ namespace Codebound.Tests
             Assert.AreEqual("Locked: finish The Workshop", KeepMapRules.WingStatus(_chapters, 3, progress));
             Assert.AreEqual("Locked: finish The Archive", KeepMapRules.WingStatus(_chapters, 4, progress));
             Assert.AreEqual("Locked: finish The Great Hall", KeepMapRules.WingStatus(_chapters, 5, progress));
-            Assert.AreEqual("Sealed, coming soon", KeepMapRules.WingStatus(_chapters, 6, progress));
+            Assert.AreEqual("Locked: finish The Towers", KeepMapRules.WingStatus(_chapters, 6, progress));
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace Codebound.Tests
         {
             StringAssert.Contains("Start with The Vaults", KeepMapRules.TalaLine("Jean", 0, false));
             StringAssert.Contains("next room", KeepMapRules.TalaLine("Jean", 3, false));
-            StringAssert.Contains("isn't fixed yet", KeepMapRules.TalaLine("Jean", 10, true));
+            StringAssert.Contains("fixed the Keep", KeepMapRules.TalaLine("Jean", 10, true));
             StringAssert.Contains("Jean", KeepMapRules.TalaLine("Jean", 3, false));
         }
 

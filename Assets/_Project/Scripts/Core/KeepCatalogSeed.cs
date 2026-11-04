@@ -51,7 +51,13 @@ namespace Codebound.Core
                     Room("6-4", "The Order That Arrives Twice", "Bug hunt", "Retries and idempotency"),
                     Room("6-5", "The Hidden 404", "Repair", "HTTP status codes"),
                     Room("6-6", "Trust No Input", "Code review", "SQL injection")),
-                Sealed("architect", "Architect's Chamber")
+                Chapter("architect", "Architect's Chamber",
+                    Room("7-1", "The Conflict Markers", "Predict", "Merge conflicts"),
+                    Room("7-2", "The Commit That Broke It", "Trace", "Finding a bad commit"),
+                    Room("7-3", "The Test That Cannot Fail", "Bug hunt", "Tests that can fail"),
+                    Room("7-4", "The Flaky Guard Test", "Repair", "Flaky tests and the clock"),
+                    Room("7-5", "The Master Key", "Trace", "Root cause"),
+                    Room("7-6", "The Smallest Safe Change", "Code review", "Small, tested changes"))
             };
         }
 

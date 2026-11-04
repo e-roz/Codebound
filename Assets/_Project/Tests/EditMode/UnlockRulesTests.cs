@@ -34,7 +34,7 @@ namespace Codebound.Tests
         }
 
         [Test]
-        public void FreshGame_VaultsOpen_GatesToTowersLocked_OthersSealed()
+        public void FreshGame_VaultsOpen_EveryOtherWingLocked()
         {
             var progress = new List<RoomProgress>();
 
@@ -44,8 +44,7 @@ namespace Codebound.Tests
             Assert.AreEqual(WingState.Locked, UnlockRules.GetWingState(_chapters, 3, progress));
             Assert.AreEqual(WingState.Locked, UnlockRules.GetWingState(_chapters, 4, progress));
             Assert.AreEqual(WingState.Locked, UnlockRules.GetWingState(_chapters, 5, progress));
-            for (var c = 6; c < _chapters.Count; c++)
-                Assert.AreEqual(WingState.Sealed, UnlockRules.GetWingState(_chapters, c, progress));
+            Assert.AreEqual(WingState.Locked, UnlockRules.GetWingState(_chapters, 6, progress));
         }
 
         [Test]
@@ -71,9 +70,15 @@ namespace Codebound.Tests
         [Test]
         public void SealedWing_RoomsAreAlwaysLocked()
         {
+            var chapters = new List<KeepChapter>
+            {
+                _chapters[0],
+                new KeepChapter { id = "x", name = "X", isSealed = true, rooms = new List<KeepRoom> { new KeepRoom { id = "x-1" } } }
+            };
             var progress = Done(Chapter1);
 
-            Assert.AreEqual(RoomState.Locked, UnlockRules.GetRoomState(_chapters, 2, 0, progress));
+            Assert.AreEqual(WingState.Sealed, UnlockRules.GetWingState(chapters, 1, progress));
+            Assert.AreEqual(RoomState.Locked, UnlockRules.GetRoomState(chapters, 1, 0, progress));
         }
 
         [Test]
@@ -150,7 +155,7 @@ namespace Codebound.Tests
             };
 
             Assert.AreEqual(5, UnlockRules.TotalStars(_chapters, progress));
-            Assert.AreEqual(108, UnlockRules.MaxStars(_chapters));
+            Assert.AreEqual(126, UnlockRules.MaxStars(_chapters));
             Assert.AreEqual(2, UnlockRules.CompletedRooms(_chapters, progress));
         }
 
@@ -170,7 +175,7 @@ namespace Codebound.Tests
         [Test]
         public void TryFindNextRoom_ReturnsFalseWhenEverythingPlayableIsDone()
         {
-            var all = Done("1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "2-1", "2-2", "2-3", "2-4", "2-5", "2-6", "3-1", "3-2", "3-3", "3-4", "3-5", "3-6", "4-1", "4-2", "4-3", "4-4", "4-5", "4-6", "5-1", "5-2", "5-3", "5-4", "5-5", "5-6", "6-1", "6-2", "6-3", "6-4", "6-5", "6-6");
+            var all = Done("1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "2-1", "2-2", "2-3", "2-4", "2-5", "2-6", "3-1", "3-2", "3-3", "3-4", "3-5", "3-6", "4-1", "4-2", "4-3", "4-4", "4-5", "4-6", "5-1", "5-2", "5-3", "5-4", "5-5", "5-6", "6-1", "6-2", "6-3", "6-4", "6-5", "6-6", "7-1", "7-2", "7-3", "7-4", "7-5", "7-6");
 
             Assert.IsFalse(UnlockRules.TryFindNextRoom(_chapters, all, out _, out _));
         }

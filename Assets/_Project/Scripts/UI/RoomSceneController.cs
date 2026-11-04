@@ -49,6 +49,8 @@ namespace Codebound.UI
 
             _session = new RoomSession(room);
             _flow = new RoomFlow(_session, _state);
+            if (GameServices.Save.TryLoad(out var player) && !string.IsNullOrWhiteSpace(player.playerName))
+                _flow.PlayerName = player.playerName;
             _flow.Changed += RefreshButtons;
             _flow.Completed += OnCompleted;
             _flow.LeaveRequested += SceneLoader.LoadKeepMap;
@@ -181,6 +183,7 @@ namespace Codebound.UI
             if (!GameServices.Save.TryLoad(out var save)) return;
 
             UnlockRules.Record(save.progress, _session.Room.Id, stars);
+            if (_session.Room.HasEnding) save.endingSeen = true;
             try
             {
                 GameServices.Save.Save(save);

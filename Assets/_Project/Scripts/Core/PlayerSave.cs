@@ -11,6 +11,8 @@ namespace Codebound.Core
         public int version = CurrentVersion;
         public string playerName;
         public int lookId;
+        // Set once the player has seen the ending (old saves have no such field and read as false).
+        public bool endingSeen;
         public List<RoomProgress> progress = new List<RoomProgress>();
 
         public bool IsValid() => version >= 1 && !string.IsNullOrWhiteSpace(playerName);

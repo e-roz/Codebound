@@ -60,7 +60,7 @@ namespace Codebound.Core
 
         public static string TalaLine(string playerName, int completedRooms, bool mvpComplete)
         {
-            if (mvpComplete) return $"The Keep isn't fixed yet, {playerName}. The sealed wings are waiting.";
+            if (mvpComplete) return $"You fixed the Keep, {playerName}. It will break again tomorrow. Replay any room for more stars.";
             if (completedRooms == 0) return $"Pick a wing, {playerName}. Start with The Vaults.";
             return $"Welcome back, {playerName}. Your next room is ready.";
         }

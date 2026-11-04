@@ -77,8 +77,9 @@ namespace Codebound.Core
             IReadOnlyList<Hypothesis> hypotheses, IReadOnlyList<FixOption> fixes, string testCode,
             IReadOnlyList<string> hints, string debrief,
             string investigatePrompt = "Investigate: which chest does each guard point to?",
-            string hypothesisPrompt = "Why does Vault B have a sword?")
+            string hypothesisPrompt = "Why does Vault B have a sword?", string ending = "")
         {
+            Ending = ending ?? string.Empty;
             InvestigatePrompt = investigatePrompt;
             HypothesisPrompt = hypothesisPrompt;
             Id = id;
@@ -112,5 +113,8 @@ namespace Codebound.Core
         public string InvestigatePrompt { get; }
         public string HypothesisPrompt { get; }
         public bool HasSupportCode => !string.IsNullOrEmpty(SupportCode);
+        // Closing story text shown on the Complete screen instead of the debrief. "{name}" becomes the player's name.
+        public string Ending { get; }
+        public bool HasEnding => Ending.Length > 0;
     }
 }

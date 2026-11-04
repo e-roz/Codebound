@@ -183,5 +183,29 @@ MonoBehaviour:
       concept: SQL injection
   - id: architect
     name: Architect's Chamber
-    isSealed: 1
-    rooms: []
+    isSealed: 0
+    rooms:
+    - id: 7-1
+      title: The Conflict Markers
+      roomType: Predict
+      concept: Merge conflicts
+    - id: 7-2
+      title: The Commit That Broke It
+      roomType: Trace
+      concept: Finding a bad commit
+    - id: 7-3
+      title: The Test That Cannot Fail
+      roomType: Bug hunt
+      concept: Tests that can fail
+    - id: 7-4
+      title: The Flaky Guard Test
+      roomType: Repair
+      concept: Flaky tests and the clock
+    - id: 7-5
+      title: The Master Key
+      roomType: Trace
+      concept: Root cause
+    - id: 7-6
+      title: The Smallest Safe Change
+      roomType: Code review
+      concept: Small, tested changes

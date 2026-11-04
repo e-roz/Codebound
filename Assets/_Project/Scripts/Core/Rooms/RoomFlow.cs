@@ -45,6 +45,8 @@ namespace Codebound.Core
         public event Action LeaveRequested;
 
         public RoomSession Session => _session;
+        // Used by a room's ending text. Empty names fall back to "Apprentice", as everywhere else in the game.
+        public string PlayerName { get; set; } = "Apprentice";
         public RoomFlowScreen Screen => Build();
 
         public void Refresh() => Changed?.Invoke();
@@ -196,7 +198,14 @@ namespace Codebound.Core
                     break;
                 case RoomStep.Complete:
                     screen.Prompt = $"Room complete! Stars {_session.Stars} / {UnlockRules.MaxStarsPerRoom}";
-                    screen.Body = room.Debrief;
+                    screen.Body = room.HasEnding ? room.Ending.Replace("{name}", PlayerName) : room.Debrief;
+                    if (room.HasEnding)
+                    {
+                        // The story ending stands alone: no leftover verdict or test message under it.
+                        screen.Notice = string.Empty;
+                        screen.Verdict = null;
+                        screen.VerdictTitle = string.Empty;
+                    }
                     Next(screen, "Back to Keep", true);
                     break;
             }
