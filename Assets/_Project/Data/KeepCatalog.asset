@@ -155,8 +155,32 @@ MonoBehaviour:
       concept: Dependency injection
   - id: towers
     name: The Towers
-    isSealed: 1
-    rooms: []
+    isSealed: 0
+    rooms:
+    - id: 6-1
+      title: The Lost Customers
+      roomType: Predict
+      concept: INNER vs LEFT JOIN
+    - id: 6-2
+      title: The Missing WHERE
+      roomType: Bug hunt
+      concept: UPDATE needs WHERE
+    - id: 6-3
+      title: The Empty Name
+      roomType: Trace
+      concept: JSON keys and properties
+    - id: 6-4
+      title: The Order That Arrives Twice
+      roomType: Bug hunt
+      concept: Retries and idempotency
+    - id: 6-5
+      title: The Hidden 404
+      roomType: Repair
+      concept: HTTP status codes
+    - id: 6-6
+      title: Trust No Input
+      roomType: Code review
+      concept: SQL injection
   - id: architect
     name: Architect's Chamber
     isSealed: 1

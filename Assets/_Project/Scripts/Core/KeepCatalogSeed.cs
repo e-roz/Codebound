@@ -44,7 +44,13 @@ namespace Codebound.Core
                     Room("5-4", "The Identical Twins", "Bug hunt", "Reference vs value equality"),
                     Room("5-5", "The Flightless Bird", "Repair", "Inheritance vs interfaces"),
                     Room("5-6", "Depend on the Interface", "Code review", "Dependency injection")),
-                Sealed("towers", "The Towers"),
+                Chapter("towers", "The Towers",
+                    Room("6-1", "The Lost Customers", "Predict", "INNER vs LEFT JOIN"),
+                    Room("6-2", "The Missing WHERE", "Bug hunt", "UPDATE needs WHERE"),
+                    Room("6-3", "The Empty Name", "Trace", "JSON keys and properties"),
+                    Room("6-4", "The Order That Arrives Twice", "Bug hunt", "Retries and idempotency"),
+                    Room("6-5", "The Hidden 404", "Repair", "HTTP status codes"),
+                    Room("6-6", "Trust No Input", "Code review", "SQL injection")),
                 Sealed("architect", "Architect's Chamber")
             };
         }

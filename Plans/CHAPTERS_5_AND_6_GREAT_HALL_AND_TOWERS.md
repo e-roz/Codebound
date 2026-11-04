@@ -1,6 +1,6 @@
 # Plan: Chapter 5 "The Great Hall" (OOP in Practice) and Chapter 6 "The Messenger Towers" (Data & Systems)
 
-Status: **APPROVED 2026-11-04. Chapter 5 BUILT (6 rooms, 404 tests pass, all fix paths played in Unity). Chapter 6 in progress.**
+Status: **APPROVED 2026-11-04. Chapter 5 BUILT (6 rooms, 404 tests pass, all fix paths played in Unity). Chapter 6 BUILT (6 rooms, 452 tests pass, all fix paths played in Unity).**
 Workflow: brainstorm (done) → **plan (this file)** → check → [changes → check again] → code → check against this plan → test.
 All wording is a draft for you to change. Exact code, options and hints get written per batch while building. Sample names in game text use only your list: Jean, Thea, Coco, Mokky, Toffee (no Ana, Ben).
 
@@ -60,3 +60,7 @@ Fix options follow the usual pattern: **Best**, **SymptomOnly** (quieter but the
 ## 8. Chapter 5 built (2026-11-04)
 
 Rooms 5.1 to 5.6 are in (Room51..Room56, tests Room51Tests..Room56Tests). Great Hall wing opens after Chapter 4. Each room was played in Unity on all three fix paths; layouts fit, messages correct. Side fix: the Observe message no longer says "it printed ." when a room prints nothing (RoomFlow.ObserveBody). Totals: 30 rooms, 90 stars.
+
+## 9. Chapter 6 built (2026-11-04)
+
+Rooms 6.1 to 6.6 are in (Room61..Room66, tests Room61Tests..Room66Tests): INNER vs LEFT JOIN, UPDATE without WHERE, JSON key vs property, retries and idempotency, ignoring HTTP status, SQL injection. The Towers wing opens after Chapter 5. No new engine code. Totals: 36 rooms, 108 stars. Only the Architect's Chamber stays sealed.

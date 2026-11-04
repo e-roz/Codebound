@@ -7,7 +7,7 @@ namespace Codebound.Tests
     public class KeepCatalogSeedTests
     {
         [Test]
-        public void HasSevenWings_FiveWingsPlayable_RestSealed()
+        public void HasSevenWings_SixWingsPlayable_RestSealed()
         {
             var chapters = KeepCatalogSeed.Create();
 
@@ -22,7 +22,9 @@ namespace Codebound.Tests
             Assert.AreEqual(6, chapters[4].rooms.Count);
             Assert.IsFalse(chapters[4].isSealed);
             Assert.IsFalse(chapters[3].isSealed);
-            for (var i = 5; i < chapters.Count; i++) Assert.IsTrue(chapters[i].isSealed, chapters[i].name);
+            Assert.AreEqual(6, chapters[5].rooms.Count);
+            Assert.IsFalse(chapters[5].isSealed);
+            for (var i = 6; i < chapters.Count; i++) Assert.IsTrue(chapters[i].isSealed, chapters[i].name);
         }
 
         [Test]
@@ -40,7 +42,7 @@ namespace Codebound.Tests
                     Assert.IsNotEmpty(room.concept, room.id);
                 }
             }
-            Assert.AreEqual(30, seen.Count);
+            Assert.AreEqual(36, seen.Count);
         }
     }
 }
