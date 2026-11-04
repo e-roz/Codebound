@@ -37,7 +37,13 @@ namespace Codebound.Core
                     Room("4-4", "The Case-Sensitive Index", "Bug hunt", "Case-sensitive keys"),
                     Room("4-5", "Searching the Whole Shelf", "Repair", "Search cost: List vs HashSet"),
                     Room("4-6", "The Right Container", "Code review", "Choosing a collection")),
-                Sealed("great-hall", "The Great Hall"),
+                Chapter("great-hall", "The Great Hall",
+                    Room("5-1", "The Shared Health", "Predict", "Static vs instance fields"),
+                    Room("5-2", "The Open Chest", "Bug hunt", "Encapsulation"),
+                    Room("5-3", "The Gentle Dog", "Trace", "virtual and override"),
+                    Room("5-4", "The Identical Twins", "Bug hunt", "Reference vs value equality"),
+                    Room("5-5", "The Flightless Bird", "Repair", "Inheritance vs interfaces"),
+                    Room("5-6", "Depend on the Interface", "Code review", "Dependency injection")),
                 Sealed("towers", "The Towers"),
                 Sealed("architect", "Architect's Chamber")
             };

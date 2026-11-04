@@ -229,7 +229,9 @@ namespace Codebound.Core
         {
             var guess = _session.Room.Predict.Options[_predicted];
             if (!done) return $"You predicted {guess}. Run the code to see the real answer.";
-            var result = _state.Error.Length > 0 ? $"it crashed with {_state.Error}" : $"it printed {_state.Output}";
+            var result = _state.Error.Length > 0 ? $"it crashed with {_state.Error}"
+                : _state.Output.Length > 0 ? $"it printed {_state.Output}"
+                : "the Keep shows the answer";
             return _session.PredictionCorrect
                 ? $"You predicted {guess}, and {result}. Nice."
                 : $"You predicted {guess}, but {result}. Find out why.";

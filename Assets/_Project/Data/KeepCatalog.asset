@@ -127,8 +127,32 @@ MonoBehaviour:
       concept: Choosing a collection
   - id: great-hall
     name: The Great Hall
-    isSealed: 1
-    rooms: []
+    isSealed: 0
+    rooms:
+    - id: 5-1
+      title: The Shared Health
+      roomType: Predict
+      concept: Static vs instance fields
+    - id: 5-2
+      title: The Open Chest
+      roomType: Bug hunt
+      concept: Encapsulation
+    - id: 5-3
+      title: The Gentle Dog
+      roomType: Trace
+      concept: virtual and override
+    - id: 5-4
+      title: The Identical Twins
+      roomType: Bug hunt
+      concept: Reference vs value equality
+    - id: 5-5
+      title: The Flightless Bird
+      roomType: Repair
+      concept: Inheritance vs interfaces
+    - id: 5-6
+      title: Depend on the Interface
+      roomType: Code review
+      concept: Dependency injection
   - id: towers
     name: The Towers
     isSealed: 1
